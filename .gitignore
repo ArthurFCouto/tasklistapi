@@ -3,9 +3,6 @@
 # dependencies
 /node_modules
 
-# typescript
-/src
-
 # environment variables
 /*.env
 
