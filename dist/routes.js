@@ -8,4 +8,5 @@ const UserController_1 = __importDefault(require("./app/controllers/UserControll
 const routes = (0, express_1.Router)();
 routes.get('/user', UserController_1.default.list);
 routes.post('/user', UserController_1.default.save);
+routes.delete('/user/:id', UserController_1.default.delete);
 exports.default = routes;

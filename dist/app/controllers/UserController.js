@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_1 = __importDefault(require("../../database/models/user"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 class UserController {
     save(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -27,7 +28,7 @@ class UserController {
                 const user = yield user_1.default.create({
                     name: req.body.name,
                     email: req.body.email,
-                    password_hash: req.body.password
+                    password_hash: yield bcryptjs_1.default.hash(req.body.password, 8)
                 });
                 const { id, name, email } = user;
                 return res.json({
@@ -35,6 +36,25 @@ class UserController {
                     name,
                     email
                 });
+            }
+            catch (error) {
+                console.log(error);
+                return res.status(500).json({ error: 'Error on our server. Try later' });
+            }
+        });
+    }
+    delete(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = yield user_1.default.findOne({
+                    where: {
+                        id: req.params.id
+                    }
+                });
+                if (!user)
+                    return res.status(404).json({ error: 'User not found' });
+                yield user.destroy();
+                return res.status(200).json({});
             }
             catch (error) {
                 console.log(error);

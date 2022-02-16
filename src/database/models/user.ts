@@ -3,10 +3,25 @@ import { DataTypes } from "sequelize";
 import sequelize from "..";
 
 const User = sequelize.define('user', {
-    id: DataTypes.INTEGER,
-    name: DataTypes.STRING,
-    email: DataTypes.BOOLEAN,
-    password_hash: DataTypes.STRING
+    id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    password_hash: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
 });
 
 //Create table if not exists...

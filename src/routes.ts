@@ -4,5 +4,6 @@ const routes = Router();
 
 routes.get('/user', UserController.list);
 routes.post('/user', UserController.save);
+routes.delete('/user/:id', UserController.delete);
 
 export default routes;

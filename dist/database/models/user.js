@@ -15,10 +15,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const __1 = __importDefault(require(".."));
 const User = __1.default.define('user', {
-    id: sequelize_1.DataTypes.INTEGER,
-    name: sequelize_1.DataTypes.STRING,
-    email: sequelize_1.DataTypes.BOOLEAN,
-    password_hash: sequelize_1.DataTypes.STRING
+    id: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+    },
+    name: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false
+    },
+    email: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    password_hash: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false
+    },
 });
 //Create table if not exists...
 const init = () => __awaiter(void 0, void 0, void 0, function* () {
