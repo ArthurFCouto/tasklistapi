@@ -1,8 +1,8 @@
 import { DataTypes } from "sequelize";
 
-import sequelize from "..";
+import database from "..";
 
-const User = sequelize.define('user', {
+const User = database.define('user', {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,

@@ -5,8 +5,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const UserController_1 = __importDefault(require("./app/controllers/UserController"));
+const SessionController_1 = __importDefault(require("./app/controllers/SessionController"));
+const TaskController_1 = __importDefault(require("./app/controllers/TaskController"));
+const auth_1 = __importDefault(require("./app/middlewares/auth"));
 const routes = (0, express_1.Router)();
-routes.get('/user', UserController_1.default.list);
 routes.post('/user', UserController_1.default.save);
+routes.post('/session', SessionController_1.default.verify);
+routes.use(auth_1.default);
+routes.get('/user', UserController_1.default.list);
 routes.delete('/user/:id', UserController_1.default.delete);
+routes.post('/task', TaskController_1.default.save);
+routes.get('/task', TaskController_1.default.list);
+routes.put('/task/:id', TaskController_1.default.update);
+routes.delete('/task/:id', TaskController_1.default.delete);
 exports.default = routes;
