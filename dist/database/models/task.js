@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const __1 = __importDefault(require(".."));
+const user_1 = __importDefault(require("./user"));
 const Task = __1.default.define('task', {
     id: {
         type: sequelize_1.DataTypes.INTEGER,
@@ -30,19 +31,20 @@ const Task = __1.default.define('task', {
         defaultValue: false,
         allowNull: false
     },
-    user_id: {
-        type: sequelize_1.DataTypes.INTEGER,
-        references: {
-            model: 'user',
-            key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
-        //allowNull: false
-    }
 });
 const init = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield Task.sync();
+    try {
+        Task.belongsTo(user_1.default, {
+            constraint: true,
+            foreignkey: 'user_id'
+        });
+        yield Task.sync();
+        //await database.sync({force: true});
+        console.log('Succession in creating Task <> User relationship');
+    }
+    catch (error) {
+        console.log(error);
+    }
 });
 init();
 exports.default = Task;

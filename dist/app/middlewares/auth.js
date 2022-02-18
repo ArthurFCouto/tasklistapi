@@ -20,7 +20,7 @@ const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         const [, token] = authHeader.split(' ');
         try {
             const decoded = Object(yield jsonwebtoken_1.default.verify(token, String(process.env.JWT_SECRET)));
-            req.params.userId = decoded.id;
+            req.userId = decoded.id;
             const idIsPresent = yield user_1.default.findByPk(decoded.id);
             if (idIsPresent)
                 return next();

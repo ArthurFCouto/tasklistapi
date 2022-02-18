@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 import Task from "../../database/models/task";
 
 class TaskController {
-    async save(req: Request, res: Response) {
+    async save(req: any, res: Response) {
         const { task } = req.body;
         try {
             const newTask = await Task.create({
-                user_id: req.params.userId,
+                userId: req.userId,
                 task: task
             });
             return res.json(newTask);
@@ -16,24 +16,29 @@ class TaskController {
         }
     }
 
-    async list(req: Request, res: Response) {
+    async list(req: any, res: Response) {
         const { check } = req.query;
-        const tasks = await Task.findAll({
-            where: {
-                check: check ? check : false,
-                user_id: req.params.userId
-            }
-        });
-        return res.json(tasks);
+        try {
+            const tasks = await Task.findAll({
+                where: {
+                    check: check ? check : false,
+                    userId: req.userId
+                }
+            });
+            return res.json(tasks);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ error: 'Error on our server. Try later' });
+        }
     }
 
-    async update(req: Request, res: Response) {
+    async update(req: any, res: Response) {
         const { id } = req.params;
         try {
             const task = await Task.findOne({
                 where: {
                     id: id,
-                    user_id: req.params.userId
+                    userId: req.userId
                 }
             });
             if (!task)
@@ -48,13 +53,13 @@ class TaskController {
         }
     }
 
-    async delete(req: Request, res: Response) {
+    async delete(req: any, res: Response) {
         const { id } = req.params;
         try {
             const task = await Task.findOne({
                 where: {
                     id: id,
-                    user_id: req.params.userId
+                    userId: req.userId
                 }
             });
             if (!task)

@@ -19,7 +19,7 @@ class TaskController {
             const { task } = req.body;
             try {
                 const newTask = yield task_1.default.create({
-                    user_id: req.params.userId,
+                    userId: req.userId,
                     task: task
                 });
                 return res.json(newTask);
@@ -33,13 +33,19 @@ class TaskController {
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { check } = req.query;
-            const tasks = yield task_1.default.findAll({
-                where: {
-                    check: check ? check : false,
-                    user_id: req.params.userId
-                }
-            });
-            return res.json(tasks);
+            try {
+                const tasks = yield task_1.default.findAll({
+                    where: {
+                        check: check ? check : false,
+                        userId: req.userId
+                    }
+                });
+                return res.json(tasks);
+            }
+            catch (error) {
+                console.log(error);
+                return res.status(500).json({ error: 'Error on our server. Try later' });
+            }
         });
     }
     update(req, res) {
@@ -49,7 +55,7 @@ class TaskController {
                 const task = yield task_1.default.findOne({
                     where: {
                         id: id,
-                        user_id: req.params.userId
+                        userId: req.userId
                     }
                 });
                 if (!task)
@@ -72,7 +78,7 @@ class TaskController {
                 const task = yield task_1.default.findOne({
                     where: {
                         id: id,
-                        user_id: req.params.userId
+                        userId: req.userId
                     }
                 });
                 if (!task)

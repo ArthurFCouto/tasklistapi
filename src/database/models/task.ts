@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 
 import database from "..";
+import User from "./user";
 
 const Task = database.define('task', {
     id: {
@@ -18,20 +19,20 @@ const Task = database.define('task', {
         defaultValue: false,
         allowNull: false
     },
-    user_id: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'user',
-            key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
-        //allowNull: false
-    }
 });
 
 const init = async () => {
-    await Task.sync();
+    try {
+        Task.belongsTo(User, {
+            constraint: true,
+            foreignkey: 'user_id'
+        });
+        await Task.sync();
+        //await database.sync({force: true});
+        console.log('Succession in creating Task <> User relationship');
+    } catch (error) {
+        console.log(error);
+    }
 };
 
 init();
