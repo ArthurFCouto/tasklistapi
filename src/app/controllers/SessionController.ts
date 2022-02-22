@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../../database/models/user';
+import logger from '../../logger';
 
 class SessionController {
     async verify(req: Request, res: Response) {
@@ -32,7 +33,7 @@ class SessionController {
                 error: 'User not found'
             });
         } catch (error) {
-            console.log(error);
+            logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });
         }
     }

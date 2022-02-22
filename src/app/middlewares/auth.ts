@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../../database/models/user';
+import logger from '../../logger';
 
 const authMiddleware = async (req: any, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -15,11 +16,10 @@ const authMiddleware = async (req: any, res: Response, next: NextFunction) => {
             else
                 return res.status(400).json({ error: 'Invalid token' });
         } catch (error) {
+            logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });
         }
-    } else return res.status(401).json({
-        error: 'Request failed, token not sent'
-    });
+    } else return res.status(401).json({ error: 'Request failed, token not sent' });
 }
 
 export default authMiddleware;

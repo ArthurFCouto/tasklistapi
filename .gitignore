@@ -8,6 +8,7 @@
 
 # arquives
 /src/uploads/*
+/logs/*
 
 # debug
 npm-debug.log*

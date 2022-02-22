@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import database from '..';
+import logger from '../../logger';
 
 const User = database.define('user', {
     id: {
@@ -33,7 +34,7 @@ const init = async () => {
             alter: true
         });
     } catch (error) {
-        console.log(error);
+        logger.error(error);
     }
 };
 

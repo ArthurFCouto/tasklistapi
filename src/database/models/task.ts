@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import database from '..';
 import User from './user';
+import logger from '../../logger';
 
 const Task = database.define('task', {
     id: {
@@ -26,11 +27,11 @@ const init = async () => {
             constraint: true,
             foreignkey: 'user_id'
         });
-        await Task.sync();
-        //await database.sync({force: true});
-        console.log('Succession in creating Task <> User relationship');
+        await Task.sync({
+            alter: true
+        });
     } catch (error) {
-        console.log(error);
+        logger.error(error);
     }
 };
 
