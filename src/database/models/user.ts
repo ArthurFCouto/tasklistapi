@@ -1,6 +1,5 @@
-import { DataTypes } from "sequelize";
-
-import database from "..";
+import { DataTypes } from 'sequelize';
+import database from '..';
 
 const User = database.define('user', {
     id: {
@@ -22,11 +21,20 @@ const User = database.define('user', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    image_perfil: {
+        type: DataTypes.STRING
+    }
 });
 
 //Create table if not exists...
 const init = async () => {
-    await User.sync();
+    try {
+        await User.sync({
+            alter: true
+        });
+    } catch (error) {
+        console.log(error);
+    }
 };
 
 init();

@@ -1,10 +1,9 @@
-# Tutorial para Construção de API
+# Tutorial para Construção de API 
+# NodeJS + typescript
 
-Este tutorial é um complemento às videoaulas disponíveis em: https://www.youtube.com/playlist?list=PLd4Jo6d-yhDLJcFlLzx4SR4WU8hVUmuSQ
+Este readme foi baseado em um projeto do vídeo de [@Andres Jesse](https://www.youtube.com/playlist?list=PLd4Jo6d-yhDLJcFlLzx4SR4WU8hVUmuSQ) e do curso [@Fabrica de aplicativos](https://www.instagram.com/sujeitoprogramador/).
 
 Nota: ao clonar este projeto você precisa criar manualmente o arquivo `.env`, conforme explica o tutorial a seguir.
-
-Para saber mais: www.andresjesse.com
 
 ## Ambiente e Ferramentas:
 
@@ -16,43 +15,27 @@ Para saber mais: www.andresjesse.com
 - JWT: https://jwt.io/
 - Permit: https://github.com/ianstormtaylor/permit
 
-## Metodologia:
-
-1. Configuração do Ambiente
-2. Rotas e Controllers
-3. Banco de Dados
-4. Tratamento de Erros
-5. Autenticação
-
 ## **1. Configuração do Ambiente**
 
-Linux (Ubuntu):
-
-`$ sudo snap install heroku --classic`
-
-Mac:
-
-`$ brew install heroku/brew/heroku `
-
-Após a instalação, crie uma conta (heroku.com), e faça login:
+Crie uma conta (heroku.com), e faça login:
 
 `$ heroku login`
 
-Crie um novo projeto **Node.js**. Você pode nomear e preencher os dados como quiser, eu batizei este exemplo como _Aula21-API-Heroku_:
+Crie um novo projeto **Node.js**. Você pode nomear e preencher os dados como quiser, eu batizei este exemplo como tasklist:
 
 ```
-$ mkdir Aula21-API-Heroku
-$ cd Aula21-API-Heroku
-$ yarn init
+$ mkdir tasklist
+$ cd tasklist
+$ npm init
 ```
 
 Adicione o framework **Express** e o middleware **CORS**:
 
-`$ yarn add express cors`
+`$ npm install express cors`
 
 Adicione o pacote **nodemon**, para monitorar as alterações durante o desenvolvimento. Esse passo é opcional, mas sem isso você precisa reiniciar o servidor toda vez que é feita uma modificação em qualquer arquivo:
 
-`$ yarn add nodemon`
+`$ npm install nodemon`
 
 Adicione **scripts** de inicialização em `package.json`. Note que são criadas duas versões: "dev", que executa via nodemon (para usar durante o desenvolvimento); e "start", que executa o node diretamente (para usar em produção):
 

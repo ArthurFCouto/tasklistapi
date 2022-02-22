@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import Task from "../../database/models/task";
+import { Response } from 'express';
+import Task from '../../database/models/task';
 
 class TaskController {
     async save(req: any, res: Response) {

@@ -1,12 +1,15 @@
 import { Router } from 'express';
+import multer from 'multer';
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import TaskController from './app/controllers/TaskController';
 import authMiddleware from './app/middlewares/auth';
+import uploadFiles from './app/middlewares/uploadFiles';
 
 const routes = Router();
+const upload = multer(uploadFiles);
 
-routes.post('/user', UserController.save);
+routes.post('/user', upload.single('image_perfil'), UserController.save);
 routes.post('/session', SessionController.verify);
 
 routes.use(authMiddleware);

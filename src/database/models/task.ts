@@ -1,7 +1,6 @@
-import { DataTypes } from "sequelize";
-
-import database from "..";
-import User from "./user";
+import { DataTypes } from 'sequelize';
+import database from '..';
+import User from './user';
 
 const Task = database.define('task', {
     id: {
