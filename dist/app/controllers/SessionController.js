@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_1 = __importDefault(require("../../database/models/user"));
+const logger_1 = __importDefault(require("../../logger"));
 class SessionController {
     verify(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -50,7 +51,7 @@ class SessionController {
                     });
             }
             catch (error) {
-                console.log(error);
+                logger_1.default.error(error);
                 return res.status(500).json({ error: 'Error on our server. Try later' });
             }
         });

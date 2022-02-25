@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_1 = __importDefault(require("../../database/models/user"));
+const logger_1 = __importDefault(require("../../logger"));
 const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const authHeader = req.headers.authorization;
     if (authHeader) {
@@ -28,12 +29,11 @@ const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
                 return res.status(400).json({ error: 'Invalid token' });
         }
         catch (error) {
+            logger_1.default.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });
         }
     }
     else
-        return res.status(401).json({
-            error: 'Request failed, token not sent'
-        });
+        return res.status(401).json({ error: 'Request failed, token not sent' });
 });
 exports.default = authMiddleware;

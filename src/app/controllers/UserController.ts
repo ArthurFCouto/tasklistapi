@@ -1,6 +1,17 @@
 import { Request, Response } from 'express';
-import User from '../../database/models/user';
+import fs, { PathLike } from 'fs';
+import path from 'path';
 import bcrypt from 'bcryptjs';
+import User from '../../database/models/user';
+import logger from '../../logger';
+
+const deleteFile = (src: PathLike) => {
+    fs.unlink(src, function (err) {
+        if (err)
+            logger.error(err);
+        console.log(`Image temp deleted. Source: ${src}`);
+    });
+}
 
 class UserController {
     async save(req: any, res: Response) {
@@ -12,19 +23,35 @@ class UserController {
             });
             if (emailIsPresent)
                 return res.status(400).json({ error: 'E-mail already registered' });
-            const { filename } = req.file;
+            const { filename, path: src, size } = req.file;
+            let url = null;
+            if (filename) {
+                if (size / 1024 < 300) {
+                    const newpath = path.resolve(__dirname, '..', '..', 'uploads', filename);
+                    try {
+                        fs.copyFileSync(src, newpath);
+                        url = `http://localhost:3030/uploads/${filename}`;
+                    } catch (error) {
+                        logger.error(error);
+                    }
+                    deleteFile(src);
+                } else {
+                    deleteFile(src);
+                    return res.status(401).json({ error: 'Image size larger than allowed (300kb)'});
+                }
+            }
             const user = await User.create({
                 name: req.body.name,
                 email: req.body.email,
                 password_hash: await bcrypt.hash(req.body.password, 8),
-                image_perfil: filename ? filename : null
+                image_perfil: filename
             });
-            const { id, name, email, image_perfil } = user;
+            const { id, name, email } = user;
             return res.json({
                 id,
                 name,
                 email,
-                image_perfil
+                image_perfil: url
             });
         } catch (error) {
             console.log(error);
@@ -53,11 +80,12 @@ class UserController {
         const user = await User.findAll()
             .then((list: any) => list.map((user: any) => {
                 const { id, name, email, image_perfil } = user;
+                const url = image_perfil == null ? `http://localhost:3030/public/note_list.png` : `http://localhost:3030/uploads/${image_perfil}`
                 return {
                     id,
                     name,
                     email,
-                    image_perfil
+                    image_perfil: url
                 }
             }));
         return res.json(user);

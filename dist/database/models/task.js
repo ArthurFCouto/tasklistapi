@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const __1 = __importDefault(require(".."));
 const user_1 = __importDefault(require("./user"));
+const logger_1 = __importDefault(require("../../logger"));
 const Task = __1.default.define('task', {
     id: {
         type: sequelize_1.DataTypes.INTEGER,
@@ -38,12 +39,12 @@ const init = () => __awaiter(void 0, void 0, void 0, function* () {
             constraint: true,
             foreignkey: 'user_id'
         });
-        yield Task.sync();
-        //await database.sync({force: true});
-        console.log('Succession in creating Task <> User relationship');
+        yield Task.sync({
+            alter: true
+        });
     }
     catch (error) {
-        console.log(error);
+        logger_1.default.error(error);
     }
 });
 init();
