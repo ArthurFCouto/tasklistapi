@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const task_1 = __importDefault(require("../../database/models/task"));
+const logger_1 = __importDefault(require("../../logger"));
 class TaskController {
     save(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -25,7 +26,7 @@ class TaskController {
                 return res.json(newTask);
             }
             catch (error) {
-                console.log(error);
+                logger_1.default.error(error);
                 return res.status(500).json({ error: 'Error on our server. Try later' });
             }
         });
@@ -43,7 +44,7 @@ class TaskController {
                 return res.json(tasks);
             }
             catch (error) {
-                console.log(error);
+                logger_1.default.error(error);
                 return res.status(500).json({ error: 'Error on our server. Try later' });
             }
         });
@@ -66,7 +67,7 @@ class TaskController {
                 return res.json(task);
             }
             catch (error) {
-                console.log(error);
+                logger_1.default.error(error);
                 return res.status(500).json({ error: 'Error on our server. Try later' });
             }
         });
@@ -87,7 +88,7 @@ class TaskController {
                 return res.json(task);
             }
             catch (error) {
-                console.log(error);
+                logger_1.default.error(error);
                 return res.status(500).json({ error: 'Error on our server. Try later' });
             }
         });

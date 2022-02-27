@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import Task from '../../database/models/task';
+import logger from '../../logger';
 
 class TaskController {
     async save(req: any, res: Response) {
@@ -11,7 +12,7 @@ class TaskController {
             });
             return res.json(newTask);
         } catch (error) {
-            console.log(error);
+            logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });
         }
     }
@@ -27,7 +28,7 @@ class TaskController {
             });
             return res.json(tasks);
         } catch (error) {
-            console.log(error);
+            logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });
         }
     }
@@ -48,7 +49,7 @@ class TaskController {
             });
             return res.json(task);
         } catch (error) {
-            console.log(error);
+            logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });
         }
     }
@@ -67,7 +68,7 @@ class TaskController {
             await task.destroy();
             return res.json(task);
         } catch (error) {
-            console.log(error);
+            logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });
         }
     }

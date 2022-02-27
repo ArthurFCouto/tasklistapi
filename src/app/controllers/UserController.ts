@@ -27,17 +27,17 @@ class UserController {
             let url = null;
             if (filename) {
                 if (size / 1024 < 300) {
-                    const newpath = path.resolve(__dirname, '..', '..', 'uploads', filename);
+                    const newpath = path.resolve(__dirname, '..', '..', 'public', 'uploads', filename);
                     try {
                         fs.copyFileSync(src, newpath);
-                        url = `http://localhost:3030/uploads/${filename}`;
+                        url = `/public/uploads/${filename}`;
                     } catch (error) {
                         logger.error(error);
                     }
                     deleteFile(src);
                 } else {
                     deleteFile(src);
-                    return res.status(401).json({ error: 'Image size larger than allowed (300kb)'});
+                    return res.status(401).json({ error: 'Image size larger than allowed (300kb)' });
                 }
             }
             const user = await User.create({
@@ -54,7 +54,7 @@ class UserController {
                 image_perfil: url
             });
         } catch (error) {
-            console.log(error);
+            logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });
         }
     }
@@ -71,7 +71,7 @@ class UserController {
             await user.destroy();
             return res.status(200).json({});
         } catch (error) {
-            console.log(error);
+            logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });
         }
     }
@@ -80,7 +80,7 @@ class UserController {
         const user = await User.findAll()
             .then((list: any) => list.map((user: any) => {
                 const { id, name, email, image_perfil } = user;
-                const url = image_perfil == null ? `http://localhost:3030/public/note_list.png` : `http://localhost:3030/uploads/${image_perfil}`
+                const url = image_perfil == null ? `/public/profile.png` : `/public/uploads/${image_perfil}`
                 return {
                     id,
                     name,
@@ -89,6 +89,29 @@ class UserController {
                 }
             }));
         return res.json(user);
+    }
+
+    async detail(req: Request, res: Response) {
+        try {
+            const user = await User.findOne({
+                where: {
+                    id: req.params.id
+                }
+            });
+            if (!user)
+                return res.status(404).json({ error: 'User not found' });
+            const { id, name, email, image_perfil } = user;
+            const url = image_perfil == null ? `/public/profile.png` : `/public/uploads/${image_perfil}`
+            return res.json({
+                id,
+                name,
+                email,
+                image_perfil: url
+            });
+        } catch (error) {
+            logger.error(error);
+            return res.status(500).json({ error: 'Error on our server. Try later' });
+        }
     }
 }
 

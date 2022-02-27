@@ -16,7 +16,6 @@ class App {
     }
     middlewares() {
         this.server.use((0, cors_1.default)());
-        this.server.use('/uploads', express_1.default.static(path_1.default.resolve(__dirname, 'uploads'))); //Liberando o acesso através de uma rota get a pasta uploads
         this.server.use('/public', express_1.default.static(path_1.default.resolve(__dirname, 'public'))); //Liberando o acesso através de uma rota get a pasta public
         this.server.use(express_1.default.json());
     }

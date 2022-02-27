@@ -39,10 +39,10 @@ class UserController {
                 let url = null;
                 if (filename) {
                     if (size / 1024 < 300) {
-                        const newpath = path_1.default.resolve(__dirname, '..', '..', 'uploads', filename);
+                        const newpath = path_1.default.resolve(__dirname, '..', '..', 'public', 'uploads', filename);
                         try {
                             fs_1.default.copyFileSync(src, newpath);
-                            url = `http://localhost:3030/uploads/${filename}`;
+                            url = `/public/uploads/${filename}`;
                         }
                         catch (error) {
                             logger_1.default.error(error);
@@ -69,7 +69,7 @@ class UserController {
                 });
             }
             catch (error) {
-                console.log(error);
+                logger_1.default.error(error);
                 return res.status(500).json({ error: 'Error on our server. Try later' });
             }
         });
@@ -88,7 +88,7 @@ class UserController {
                 return res.status(200).json({});
             }
             catch (error) {
-                console.log(error);
+                logger_1.default.error(error);
                 return res.status(500).json({ error: 'Error on our server. Try later' });
             }
         });
@@ -98,7 +98,7 @@ class UserController {
             const user = yield user_1.default.findAll()
                 .then((list) => list.map((user) => {
                 const { id, name, email, image_perfil } = user;
-                const url = image_perfil == null ? `http://localhost:3030/public/note_list.png` : `http://localhost:3030/uploads/${image_perfil}`;
+                const url = image_perfil == null ? `/public/profile.png` : `/public/uploads/${image_perfil}`;
                 return {
                     id,
                     name,
@@ -107,6 +107,31 @@ class UserController {
                 };
             }));
             return res.json(user);
+        });
+    }
+    detail(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = yield user_1.default.findOne({
+                    where: {
+                        id: req.params.id
+                    }
+                });
+                if (!user)
+                    return res.status(404).json({ error: 'User not found' });
+                const { id, name, email, image_perfil } = user;
+                const url = image_perfil == null ? `/public/profile.png` : `/public/uploads/${image_perfil}`;
+                return res.json({
+                    id,
+                    name,
+                    email,
+                    image_perfil: url
+                });
+            }
+            catch (error) {
+                logger_1.default.error(error);
+                return res.status(500).json({ error: 'Error on our server. Try later' });
+            }
         });
     }
 }
