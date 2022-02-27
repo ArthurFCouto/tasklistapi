@@ -22,10 +22,28 @@ class TaskController {
         try {
             const tasks = await Task.findAll({
                 where: {
-                    check: check ? check : false,
                     userId: req.userId
                 }
-            });
+            })
+                .then((list: any) =>
+                    list.map((tasks: any) => {
+                        const { id, task, check, createdAt, updatedAt, userId } = tasks;
+                        return {
+                            id,
+                            task,
+                            check,
+                            createdAt,
+                            updatedAt,
+                            userId
+                        }
+                    })
+                );
+            if (check && tasks.length > 0) {
+                return res.json(tasks.filter((task: any) => {
+                    if (String(task.check) == String(check))
+                        return task;
+                }));
+            }
             return res.json(tasks);
         } catch (error) {
             logger.error(error);
