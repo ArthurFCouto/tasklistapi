@@ -60,6 +60,8 @@ class UserController {
             });
             if (!user)
                 return res.status(404).json({ error: 'User not found' });
+            if (user.image_perfil != null)
+                deleteFile(user.image_perfil);
             await user.destroy();
             return res.status(200).json({});
         } catch (error) {
@@ -72,7 +74,7 @@ class UserController {
         const user = await User.findAll()
             .then((list: any) => list.map((user: any) => {
                 const { id, name, email, image_perfil } = user;
-                const url = image_perfil == null ? `/public/profile.png` : `/public/uploads/${image_perfil}`
+                const url = image_perfil == null ? `/public/uploads/profile.png` : `/public/uploads/${image_perfil}`
                 return {
                     id,
                     name,
@@ -93,7 +95,7 @@ class UserController {
             if (!user)
                 return res.status(404).json({ error: 'User not found' });
             const { id, name, email, image_perfil } = user;
-            const url = image_perfil == null ? `/public/profile.png` : `/public/uploads/${image_perfil}`
+            const url = image_perfil == null ? `/public/uploads/profile.png` : `/public/uploads/${image_perfil}`
             return res.json({
                 id,
                 name,

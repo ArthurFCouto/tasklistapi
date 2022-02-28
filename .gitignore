@@ -7,7 +7,7 @@
 /*.env
 
 # arquives
-/src/public/uploads/*
+# /src/public/uploads/*
 /logs/*
 
 # debug
