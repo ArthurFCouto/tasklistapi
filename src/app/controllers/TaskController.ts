@@ -4,11 +4,12 @@ import logger from '../../logger';
 
 class TaskController {
     async save(req: any, res: Response) {
-        const { task } = req.body;
+        const { task, deadline } = req.body;
         try {
             const newTask = await Task.create({
                 userId: req.userId,
-                task: task
+                task: task,
+                deadline: deadline
             });
             return res.json(newTask);
         } catch (error) {
@@ -25,19 +26,20 @@ class TaskController {
                     userId: req.userId
                 }
             })
-                .then((list: any) =>
-                    list.map((tasks: any) => {
-                        const { id, task, check, createdAt, updatedAt, userId } = tasks;
-                        return {
-                            id,
-                            task,
-                            check,
-                            createdAt,
-                            updatedAt,
-                            userId
-                        }
-                    })
-                );
+            .then((list: any) =>
+                list.map((tasks: any) => {
+                    const { id, task, check, deadline, createdAt, updatedAt, userId } = tasks;
+                    return {
+                        id,
+                        task,
+                        check,
+                        deadline,
+                        createdAt,
+                        updatedAt,
+                        userId
+                    }
+                })
+            );
             if (check && tasks.length > 0) {
                 return res.json(tasks.filter((task: any) => {
                     if (String(task.check) == String(check))
@@ -84,7 +86,7 @@ class TaskController {
             if (!task)
                 return res.status(404).json({ error: 'Task not found' });
             await task.destroy();
-            return res.json(task);
+            return res.status(200).json({});
         } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });

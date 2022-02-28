@@ -1,9 +1,11 @@
 import { Request, Response } from 'express';
 import { readFile } from 'fs';
+import path from 'path';
 
 class LogController {
     async getLogs(req: Request, res: Response) {
-        const src = 'logs/logs.log';
+        const src = path.resolve(__dirname, '..', '..', '..', 'logs', 'logs.log');
+        //const src = 'logs/logs.log';
         readFile(src, (err, data) => {
             if (err)
                 return res.status(500).json({

@@ -32,6 +32,10 @@ const Task = __1.default.define('task', {
         defaultValue: false,
         allowNull: false
     },
+    deadline: {
+        type: sequelize_1.DataTypes.DATE,
+        allowNull: false
+    }
 });
 const init = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -40,7 +44,8 @@ const init = () => __awaiter(void 0, void 0, void 0, function* () {
             foreignkey: 'user_id'
         });
         yield Task.sync({
-            alter: true
+            //alter: true,
+            force: true
         });
     }
     catch (error) {

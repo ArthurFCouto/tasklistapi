@@ -21,9 +21,6 @@ const User = database.define('user', {
     password_hash: {
         type: DataTypes.STRING,
         allowNull: false
-    },
-    image_perfil: {
-        type: DataTypes.STRING
     }
 });
 

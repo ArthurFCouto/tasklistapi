@@ -17,11 +17,12 @@ const logger_1 = __importDefault(require("../../logger"));
 class TaskController {
     save(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { task } = req.body;
+            const { task, deadline } = req.body;
             try {
                 const newTask = yield task_1.default.create({
                     userId: req.userId,
-                    task: task
+                    task: task,
+                    deadline: deadline
                 });
                 return res.json(newTask);
             }
@@ -37,10 +38,27 @@ class TaskController {
             try {
                 const tasks = yield task_1.default.findAll({
                     where: {
-                        check: check ? check : false,
                         userId: req.userId
                     }
-                });
+                })
+                    .then((list) => list.map((tasks) => {
+                    const { id, task, check, deadline, createdAt, updatedAt, userId } = tasks;
+                    return {
+                        id,
+                        task,
+                        check,
+                        deadline,
+                        createdAt,
+                        updatedAt,
+                        userId
+                    };
+                }));
+                if (check && tasks.length > 0) {
+                    return res.json(tasks.filter((task) => {
+                        if (String(task.check) == String(check))
+                            return task;
+                    }));
+                }
                 return res.json(tasks);
             }
             catch (error) {
@@ -85,7 +103,7 @@ class TaskController {
                 if (!task)
                     return res.status(404).json({ error: 'Task not found' });
                 yield task.destroy();
-                return res.json(task);
+                return res.status(200).json({});
             }
             catch (error) {
                 logger_1.default.error(error);

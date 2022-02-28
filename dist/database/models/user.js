@@ -34,16 +34,14 @@ const User = __1.default.define('user', {
     password_hash: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false
-    },
-    image_perfil: {
-        type: sequelize_1.DataTypes.STRING
     }
 });
 //Create table if not exists...
 const init = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield User.sync({
-            alter: true
+            //alter: true,
+            force: true
         });
     }
     catch (error) {

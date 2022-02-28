@@ -19,6 +19,10 @@ const Task = database.define('task', {
         defaultValue: false,
         allowNull: false
     },
+    deadline: {
+        type: DataTypes.DATE,
+        allowNull: false
+    }
 });
 
 const init = async () => {

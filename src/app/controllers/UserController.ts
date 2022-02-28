@@ -4,13 +4,13 @@ import bcrypt from 'bcryptjs';
 import User from '../../database/models/user';
 import logger from '../../logger';
 
-const deleteFile = (src: PathLike) => {
+/*const deleteFile = (src: PathLike) => {
     fs.unlink(src, function (err) {
         if (err)
             logger.error(err);
         console.log(`Image temp deleted. Source: ${src}`);
     });
-}
+}*/
 
 class UserController {
     async save(req: any, res: Response) {
@@ -22,7 +22,7 @@ class UserController {
             });
             if (emailIsPresent)
                 return res.status(400).json({ error: 'E-mail already registered' });
-            let url = null;
+            /*let url = null;
             if (req.file) {
                 const { filename, path: src, size } = req.file;
                 if (size / 1024 < 300) {
@@ -31,19 +31,18 @@ class UserController {
                     deleteFile(src);
                     return res.status(401).json({ error: 'Image size larger than allowed (300kb)' });
                 }
-            }
+            }*/
             const user = await User.create({
                 name: req.body.name,
                 email: req.body.email,
-                password_hash: await bcrypt.hash(req.body.password, 8),
-                image_perfil: url
+                password_hash: await bcrypt.hash(req.body.password, 8)
             });
             const { id, name, email } = user;
             return res.json({
                 id,
                 name,
                 email,
-                image_perfil: url == null ? url : `/public/uploads/${url}`
+                image: `/public/images/profile.png`
             });
         } catch (error) {
             logger.error(error);
@@ -60,8 +59,8 @@ class UserController {
             });
             if (!user)
                 return res.status(404).json({ error: 'User not found' });
-            if (user.image_perfil != null)
-                deleteFile(user.image_perfil);
+            /*if (user.image_perfil != null)
+                deleteFile(user.image_perfil);*/
             await user.destroy();
             return res.status(200).json({});
         } catch (error) {
@@ -73,13 +72,12 @@ class UserController {
     async list(req: Request, res: Response) {
         const user = await User.findAll()
             .then((list: any) => list.map((user: any) => {
-                const { id, name, email, image_perfil } = user;
-                const url = image_perfil == null ? `/public/uploads/profile.png` : `/public/uploads/${image_perfil}`
+                const { id, name, email } = user;
                 return {
                     id,
                     name,
                     email,
-                    image_perfil: url
+                    image: `/public/images/profile.png`
                 }
             }));
         return res.json(user);
@@ -94,13 +92,12 @@ class UserController {
             });
             if (!user)
                 return res.status(404).json({ error: 'User not found' });
-            const { id, name, email, image_perfil } = user;
-            const url = image_perfil == null ? `/public/uploads/profile.png` : `/public/uploads/${image_perfil}`
+            const { id, name, email } = user;
             return res.json({
                 id,
                 name,
                 email,
-                image_perfil: url
+                image: `/public/images/profile.png`
             });
         } catch (error) {
             logger.error(error);

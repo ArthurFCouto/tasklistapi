@@ -7,7 +7,7 @@ const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
 exports.default = {
     storage: multer_1.default.diskStorage({
-        //destination: path.resolve(__dirname, '..', '..', 'uploads'), //Para evitar conflitos de barras, fazemos a navegação dessa maneira
+        destination: path_1.default.resolve(__dirname, '..', '..', 'public', 'uploads'),
         filename: (req, file, cb) => {
             const ext = path_1.default.extname(file.originalname); //Salvando a extensão do arquivo
             const name = (path_1.default.basename(file.originalname, ext)).replace(/[\s.-]/g, ''); //Salvando o nome original do arquivo e removendo os espaços vazios pontos e traços

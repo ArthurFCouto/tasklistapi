@@ -8,12 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
+const path_1 = __importDefault(require("path"));
 class LogController {
     getLogs(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const src = 'logs/logs.log';
+            const src = path_1.default.resolve(__dirname, '..', '..', '..', 'logs', 'logs.log');
+            //const src = 'logs/logs.log';
             (0, fs_1.readFile)(src, (err, data) => {
                 if (err)
                     return res.status(500).json({

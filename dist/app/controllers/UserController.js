@@ -12,18 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const user_1 = __importDefault(require("../../database/models/user"));
 const logger_1 = __importDefault(require("../../logger"));
-const deleteFile = (src) => {
-    fs_1.default.unlink(src, function (err) {
+/*const deleteFile = (src: PathLike) => {
+    fs.unlink(src, function (err) {
         if (err)
-            logger_1.default.error(err);
+            logger.error(err);
         console.log(`Image temp deleted. Source: ${src}`);
     });
-};
+}*/
 class UserController {
     save(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -35,37 +33,27 @@ class UserController {
                 });
                 if (emailIsPresent)
                     return res.status(400).json({ error: 'E-mail already registered' });
-                const { filename, path: src, size } = req.file;
-                let url = null;
-                if (filename) {
+                /*let url = null;
+                if (req.file) {
+                    const { filename, path: src, size } = req.file;
                     if (size / 1024 < 300) {
-                        const newpath = path_1.default.resolve(__dirname, '..', '..', 'public', 'uploads', filename);
-                        try {
-                            fs_1.default.copyFileSync(src, newpath);
-                            url = `/public/uploads/${filename}`;
-                        }
-                        catch (error) {
-                            logger_1.default.error(error);
-                        }
-                        deleteFile(src);
-                    }
-                    else {
+                        url = filename;
+                    } else {
                         deleteFile(src);
                         return res.status(401).json({ error: 'Image size larger than allowed (300kb)' });
                     }
-                }
+                }*/
                 const user = yield user_1.default.create({
                     name: req.body.name,
                     email: req.body.email,
-                    password_hash: yield bcryptjs_1.default.hash(req.body.password, 8),
-                    image_perfil: filename
+                    password_hash: yield bcryptjs_1.default.hash(req.body.password, 8)
                 });
                 const { id, name, email } = user;
                 return res.json({
                     id,
                     name,
                     email,
-                    image_perfil: url
+                    image: `/public/images/profile.png`
                 });
             }
             catch (error) {
@@ -84,6 +72,8 @@ class UserController {
                 });
                 if (!user)
                     return res.status(404).json({ error: 'User not found' });
+                /*if (user.image_perfil != null)
+                    deleteFile(user.image_perfil);*/
                 yield user.destroy();
                 return res.status(200).json({});
             }
@@ -97,13 +87,12 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield user_1.default.findAll()
                 .then((list) => list.map((user) => {
-                const { id, name, email, image_perfil } = user;
-                const url = image_perfil == null ? `/public/profile.png` : `/public/uploads/${image_perfil}`;
+                const { id, name, email } = user;
                 return {
                     id,
                     name,
                     email,
-                    image_perfil: url
+                    image: `/public/images/profile.png`
                 };
             }));
             return res.json(user);
@@ -119,13 +108,12 @@ class UserController {
                 });
                 if (!user)
                     return res.status(404).json({ error: 'User not found' });
-                const { id, name, email, image_perfil } = user;
-                const url = image_perfil == null ? `/public/profile.png` : `/public/uploads/${image_perfil}`;
+                const { id, name, email } = user;
                 return res.json({
                     id,
                     name,
                     email,
-                    image_perfil: url
+                    image: `/public/images/profile.png`
                 });
             }
             catch (error) {
