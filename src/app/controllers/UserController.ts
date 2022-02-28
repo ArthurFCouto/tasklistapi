@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import fs, { PathLike } from 'fs';
-import path from 'path';
 import bcrypt from 'bcryptjs';
 import User from '../../database/models/user';
 import logger from '../../logger';
@@ -27,14 +26,7 @@ class UserController {
             if (req.file) {
                 const { filename, path: src, size } = req.file;
                 if (size / 1024 < 300) {
-                    const newpath = path.resolve(__dirname, '..', '..', 'public', 'uploads', filename);
-                    try {
-                        fs.copyFileSync(src, newpath);
-                        url = filename;
-                    } catch (error) {
-                        logger.error(error);
-                    }
-                    deleteFile(src);
+                    url = filename;
                 } else {
                     deleteFile(src);
                     return res.status(401).json({ error: 'Image size larger than allowed (300kb)' });

@@ -26,6 +26,6 @@ routes.delete('/task/:id', TaskController.delete);
 
 routes.get('/logs', LogsController.getLogs);
 
-routes.use((req, res, next)=> res.status(404).json({ error: 'Sorry, route not found' }));
+//routes.use((req, res, next)=> res.status(404).json({ error: 'Sorry, route not found' }));
 
 export default routes;
