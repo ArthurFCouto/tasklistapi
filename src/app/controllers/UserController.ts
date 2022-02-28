@@ -23,14 +23,14 @@ class UserController {
             });
             if (emailIsPresent)
                 return res.status(400).json({ error: 'E-mail already registered' });
-            const { filename, path: src, size } = req.file;
             let url = null;
-            if (filename) {
+            if (req.file) {
+                const { filename, path: src, size } = req.file;
                 if (size / 1024 < 300) {
                     const newpath = path.resolve(__dirname, '..', '..', 'public', 'uploads', filename);
                     try {
                         fs.copyFileSync(src, newpath);
-                        url = `/public/uploads/${filename}`;
+                        url = filename;
                     } catch (error) {
                         logger.error(error);
                     }
@@ -44,14 +44,14 @@ class UserController {
                 name: req.body.name,
                 email: req.body.email,
                 password_hash: await bcrypt.hash(req.body.password, 8),
-                image_perfil: filename
+                image_perfil: url
             });
             const { id, name, email } = user;
             return res.json({
                 id,
                 name,
                 email,
-                image_perfil: url
+                image_perfil: url == null ? url : `/public/uploads/${url}`
             });
         } catch (error) {
             logger.error(error);
