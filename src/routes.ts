@@ -14,19 +14,19 @@ const routes = Router();
 routes.post('/user', UserController.save);
 routes.post('/session', SessionController.verify);
 
-routes.use(authMiddleware);
+//routes.use(authMiddleware);
 
-routes.get('/user', UserController.list);
-routes.get('/user/:id', UserController.detail);
-routes.delete('/user/:id', UserController.delete);
+routes.get('/user', authMiddleware, UserController.list);
+routes.get('/user/:id', authMiddleware, UserController.detail);
+routes.delete('/user/:id', authMiddleware, UserController.delete);
 
-routes.post('/task', TaskController.save);
-routes.get('/task', TaskController.list);
-routes.put('/task/:id', TaskController.update);
-routes.delete('/task/:id', TaskController.delete);
+routes.post('/task', authMiddleware, TaskController.save);
+routes.get('/task', authMiddleware, TaskController.list);
+routes.put('/task/:id', authMiddleware, TaskController.update);
+routes.delete('/task/:id', authMiddleware, TaskController.delete);
 
-routes.get('/logs', LogsController.getLogs);
+routes.get('/logs', authMiddleware, LogsController.getLogs);
 
-//routes.use((req, res, next)=> res.status(404).json({ error: 'Sorry, route not found' }));
+routes.use((req, res, next)=> res.status(404).json({ error: 'Sorry, route not found' }));
 
 export default routes;

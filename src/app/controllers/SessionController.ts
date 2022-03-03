@@ -7,6 +7,8 @@ import logger from '../../logger';
 class SessionController {
     async verify(req: Request, res: Response) {
         const { email, password } = req.body;
+        if (!email || !password)
+            return res.status(400).json({ error: 'Please check the submitted fields' });
         try {
             const user = await User.findOne({
                 where: {
@@ -24,7 +26,7 @@ class SessionController {
                         },
                         token: jwt.sign({ id }, String(process.env.JWT_SECRET), {
                             expiresIn: process.env.JWT_EXPIRESIN
-                        }) 
+                        })
                     });
                 } else return res.status(400).json({
                     error: 'Password does not match'

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import fs, { PathLike } from 'fs';
+//import fs, { PathLike } from 'fs';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import User from '../../database/models/user';
 import logger from '../../logger';
@@ -14,10 +15,13 @@ import logger from '../../logger';
 
 class UserController {
     async save(req: any, res: Response) {
+        const { email, name, password } = req.body;
+        if (!email || !name || !password)
+            return res.status(400).json({ error: 'Please check the submitted fields' });
         try {
             const emailIsPresent = await User.findOne({
                 where: {
-                    email: req.body.email
+                    email: email
                 }
             });
             if (emailIsPresent)
@@ -33,16 +37,21 @@ class UserController {
                 }
             }*/
             const user = await User.create({
-                name: req.body.name,
-                email: req.body.email,
-                password_hash: await bcrypt.hash(req.body.password, 8)
+                name: name,
+                email: email,
+                password_hash: await bcrypt.hash(password, 8)
             });
-            const { id, name, email } = user;
+            const { id } = user;
             return res.json({
-                id,
-                name,
-                email,
-                image: `/public/images/profile.png`
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    image: `/public/images/profile.png`
+                },
+                token: jwt.sign({ id }, String(process.env.JWT_SECRET), {
+                    expiresIn: process.env.JWT_EXPIRESIN
+                })
             });
         } catch (error) {
             logger.error(error);
@@ -51,10 +60,13 @@ class UserController {
     }
 
     async delete(req: Request, res: Response) {
+        const { id } = req.params;
+        if (!id)
+            return res.status(400).json({ error: 'Please check the submitted fields' });
         try {
             const user = await User.findOne({
                 where: {
-                    id: req.params.id
+                    id: id
                 }
             });
             if (!user)
@@ -84,19 +96,21 @@ class UserController {
     }
 
     async detail(req: Request, res: Response) {
+        const { id } = req.params;
+        if (!id)
+            return res.status(400).json({ error: 'Please check the submitted fields' });
         try {
             const user = await User.findOne({
                 where: {
-                    id: req.params.id
+                    id: id
                 }
             });
             if (!user)
                 return res.status(404).json({ error: 'User not found' });
-            const { id, name, email } = user;
             return res.json({
-                id,
-                name,
-                email,
+                id: user.id,
+                name: user.name,
+                email: user.email,
                 image: `/public/images/profile.png`
             });
         } catch (error) {

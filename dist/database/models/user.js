@@ -40,8 +40,7 @@ const User = __1.default.define('user', {
 const init = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield User.sync({
-            //alter: true,
-            force: true
+            alter: true
         });
     }
     catch (error) {

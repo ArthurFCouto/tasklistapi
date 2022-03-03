@@ -7,8 +7,8 @@
 /*.env
 
 # arquives
-# /src/public/uploads/*
 /logs/*
+/dist/*
 
 # debug
 npm-debug.log*

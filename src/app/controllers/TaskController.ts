@@ -5,6 +5,8 @@ import logger from '../../logger';
 class TaskController {
     async save(req: any, res: Response) {
         const { task, deadline } = req.body;
+        if (!task || !deadline)
+            return res.status(400).json({ error: 'Please check the submitted fields' });
         try {
             const newTask = await Task.create({
                 userId: req.userId,
@@ -26,20 +28,20 @@ class TaskController {
                     userId: req.userId
                 }
             })
-            .then((list: any) =>
-                list.map((tasks: any) => {
-                    const { id, task, check, deadline, createdAt, updatedAt, userId } = tasks;
-                    return {
-                        id,
-                        task,
-                        check,
-                        deadline,
-                        createdAt,
-                        updatedAt,
-                        userId
-                    }
-                })
-            );
+                .then((list: any) =>
+                    list.map((tasks: any) => {
+                        const { id, task, deadline, check, createdAt, updatedAt, userId } = tasks;
+                        return {
+                            id,
+                            task,
+                            deadline,
+                            check,
+                            createdAt,
+                            updatedAt,
+                            userId
+                        }
+                    })
+                );
             if (check && tasks.length > 0) {
                 return res.json(tasks.filter((task: any) => {
                     if (String(task.check) == String(check))
@@ -55,6 +57,8 @@ class TaskController {
 
     async update(req: any, res: Response) {
         const { id } = req.params;
+        if (!id)
+            return res.status(400).json({ error: 'Please check the submitted fields' });
         try {
             const task = await Task.findOne({
                 where: {
@@ -76,6 +80,8 @@ class TaskController {
 
     async delete(req: any, res: Response) {
         const { id } = req.params;
+        if (!id)
+            return res.status(400).json({ error: 'Please check the submitted fields' });
         try {
             const task = await Task.findOne({
                 where: {

@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-//Modelo HEROKU
 const { Sequelize } = require("sequelize");
+const url = process.env.NODE_ENV == 'production' ? process.env.DATABASE_URL : 'postgres://postgres@localhost:5432/tasklist';
+//Production environment
 const database = new Sequelize(process.env.DATABASE_URL, {
     dialectOptions: {
         ssl: {

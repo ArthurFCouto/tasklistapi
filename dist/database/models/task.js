@@ -44,8 +44,7 @@ const init = () => __awaiter(void 0, void 0, void 0, function* () {
             foreignkey: 'user_id'
         });
         yield Task.sync({
-            //alter: true,
-            force: true
+            alter: true
         });
     }
     catch (error) {
