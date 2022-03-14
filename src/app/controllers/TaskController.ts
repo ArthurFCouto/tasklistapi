@@ -2,18 +2,47 @@ import { Response } from 'express';
 import Task from '../../database/models/task';
 import logger from '../../logger';
 
+type Task = {
+    id: number;
+    task: string;
+    deadline: string;
+    check: boolean;
+    createdAt: string;
+    updatedAt: string;
+    userId: number;
+};
+
+const task_model = (task: Task) => {
+    return {
+        id: task.id,
+        task: task.task,
+        deadline: task.deadline,
+        check: task.check,
+        createdAt: task.createdAt,
+        updatedAt: task.updatedAt,
+        userId: task.userId
+    };
+};
+
 class TaskController {
     async save(req: any, res: Response) {
         const { task, deadline } = req.body;
         if (!task || !deadline)
             return res.status(400).json({ error: 'Please check the submitted fields' });
         try {
+            const tasks = await Task.findAll({
+                where: {
+                    userId: req.userId
+                }
+            });
+            if (tasks.length >= 5)
+                return res.status(400).json({ error: 'Maximum registrations reached.' });
             const newTask = await Task.create({
                 userId: req.userId,
                 task: task,
                 deadline: deadline
             });
-            return res.json(newTask);
+            return res.json(task_model(newTask));
         } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });
@@ -29,25 +58,16 @@ class TaskController {
                 }
             })
                 .then((list: any) =>
-                    list.map((tasks: any) => {
-                        const { id, task, deadline, check, createdAt, updatedAt, userId } = tasks;
-                        return {
-                            id,
-                            task,
-                            deadline,
-                            check,
-                            createdAt,
-                            updatedAt,
-                            userId
-                        }
-                    })
+                    list.map((tasks: Task) => {
+                        return task_model(tasks);
+                    }).sort((x: Task, y: Task) => x.id == y.id ? 0 : x.id > y.id ? 1 : -1)
                 );
             if (check && tasks.length > 0) {
-                return res.json(tasks.filter((task: any) => {
+                return res.json(tasks.filter((task: Task) => {
                     if (String(task.check) == String(check))
                         return task;
                 }));
-            }
+            };
             return res.json(tasks);
         } catch (error) {
             logger.error(error);
@@ -71,7 +91,7 @@ class TaskController {
             await task.update({
                 check: true
             });
-            return res.json(task);
+            return res.json(task_model(task));
         } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });

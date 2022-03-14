@@ -5,6 +5,7 @@ import SessionController from './app/controllers/SessionController';
 import TaskController from './app/controllers/TaskController';
 import UserController from './app/controllers/UserController';
 import authMiddleware from './app/middlewares/auth';
+import roleMiddleware from './app/middlewares/role';
 import uploadFiles from './app/middlewares/uploadFiles';
 
 const routes = Router();
@@ -16,16 +17,16 @@ routes.post('/session', SessionController.verify);
 
 //routes.use(authMiddleware);
 
-routes.get('/user', authMiddleware, UserController.list);
+routes.get('/user', authMiddleware, roleMiddleware, UserController.list);
 routes.get('/user/:id', authMiddleware, UserController.detail);
-routes.delete('/user/:id', authMiddleware, UserController.delete);
+routes.delete('/user/:id', authMiddleware, roleMiddleware, UserController.delete);
 
 routes.post('/task', authMiddleware, TaskController.save);
 routes.get('/task', authMiddleware, TaskController.list);
 routes.put('/task/:id', authMiddleware, TaskController.update);
 routes.delete('/task/:id', authMiddleware, TaskController.delete);
 
-routes.get('/logs', authMiddleware, LogsController.getLogs);
+routes.get('/logs', authMiddleware, roleMiddleware, LogsController.getLogs);
 
 routes.use((req, res, next)=> res.status(404).json({ error: 'Sorry, route not found' }));
 

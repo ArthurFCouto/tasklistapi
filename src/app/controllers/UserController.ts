@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import User from '../../database/models/user';
 import logger from '../../logger';
+import { role_user } from '../config/roles';
 
 /*const deleteFile = (src: PathLike) => {
     fs.unlink(src, function (err) {
@@ -12,6 +13,27 @@ import logger from '../../logger';
         console.log(`Image temp deleted. Source: ${src}`);
     });
 }*/
+
+type User = {
+    created_at: string;
+    id: number;
+    email: string;
+    name: string;
+    role: string;
+    updated_at: string;
+}
+
+const user_model = (user: User) => {
+    return {
+        created_at: user.created_at,
+        email: user.email,
+        id: user.id,
+        image: `/public/images/profile.png`,
+        name: user.name,
+        role: user.role,
+        updated_at: user.updated_at,
+    }
+};
 
 class UserController {
     async save(req: any, res: Response) {
@@ -39,17 +61,13 @@ class UserController {
             const user = await User.create({
                 name: name,
                 email: email,
-                password_hash: await bcrypt.hash(password, 8)
+                password_hash: await bcrypt.hash(password, 8),
+                role: role_user
             });
-            const { id } = user;
+            const { id, role } = user;
             return res.json({
-                user: {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    image: `/public/images/profile.png`
-                },
-                token: jwt.sign({ id }, String(process.env.JWT_SECRET), {
+                user: user_model(user),
+                token: jwt.sign({ id, role }, String(process.env.JWT_SECRET), {
                     expiresIn: process.env.JWT_EXPIRESIN
                 })
             });
@@ -62,7 +80,7 @@ class UserController {
     async delete(req: Request, res: Response) {
         const { id } = req.params;
         if (!id)
-            return res.status(400).json({ error: 'Please check the submitted fields' });
+            return res.status(400).json({ error: 'Please check the submitted params' });
         try {
             const user = await User.findOne({
                 where: {
@@ -84,13 +102,7 @@ class UserController {
     async list(req: Request, res: Response) {
         const user = await User.findAll()
             .then((list: any) => list.map((user: any) => {
-                const { id, name, email } = user;
-                return {
-                    id,
-                    name,
-                    email,
-                    image: `/public/images/profile.png`
-                }
+                return user_model(user);
             }));
         return res.json(user);
     }
@@ -107,12 +119,7 @@ class UserController {
             });
             if (!user)
                 return res.status(404).json({ error: 'User not found' });
-            return res.json({
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                image: `/public/images/profile.png`
-            });
+            return res.json(user_model(user));
         } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });

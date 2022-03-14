@@ -17,14 +17,14 @@ class SessionController {
             });
             if (user) {
                 if (await bcrypt.compare(String(password), user.password_hash)) {
-                    const { id, name, email } = user;
+                    const { id, email, name, role } = user;
                     return res.status(200).json({
                         user: {
                             id,
                             name,
                             email
                         },
-                        token: jwt.sign({ id }, String(process.env.JWT_SECRET), {
+                        token: jwt.sign({ id, role }, String(process.env.JWT_SECRET), {
                             expiresIn: process.env.JWT_EXPIRESIN
                         })
                     });
