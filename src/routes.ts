@@ -1,10 +1,12 @@
 import { Router } from 'express';
 //import multer from 'multer';
 import LogsController from './app/controllers/LogsController';
+import NotificationController from './app/controllers/NotificationController';
 import SessionController from './app/controllers/SessionController';
 import TaskController from './app/controllers/TaskController';
 import UserController from './app/controllers/UserController';
 import authMiddleware from './app/middlewares/auth';
+import notificationMiddleware from './app/middlewares/notification';
 import roleMiddleware from './app/middlewares/role';
 import uploadFiles from './app/middlewares/uploadFiles';
 
@@ -25,6 +27,12 @@ routes.post('/task', authMiddleware, TaskController.save);
 routes.get('/task', authMiddleware, TaskController.list);
 routes.put('/task/:id', authMiddleware, TaskController.update);
 routes.delete('/task/:id', authMiddleware, TaskController.delete);
+
+routes.get('/realtimenotification', authMiddleware, notificationMiddleware, NotificationController.notify);
+
+routes.get('/notification', authMiddleware, NotificationController.list);
+routes.put('/notification/:id', authMiddleware, NotificationController.update);
+routes.delete('/notification/:id', authMiddleware, NotificationController.delete);
 
 routes.get('/logs', authMiddleware, roleMiddleware, LogsController.getLogs);
 

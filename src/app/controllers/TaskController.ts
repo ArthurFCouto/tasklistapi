@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import Task from '../../database/models/task';
 import logger from '../../logger';
+import notificationUtil from '../../util/notificationUtil';
 
 type Task = {
     id: number;
@@ -112,6 +113,7 @@ class TaskController {
             if (!task)
                 return res.status(404).json({ error: 'Task not found' });
             await task.destroy();
+            notificationUtil.SaveNotification("Exclusão realizada", `Atividade de ID ${id} excluída com sucesso.`, req.userId);
             return res.status(200).json({});
         } catch (error) {
             logger.error(error);

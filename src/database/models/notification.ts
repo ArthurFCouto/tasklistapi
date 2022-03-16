@@ -1,37 +1,37 @@
 import { DataTypes } from 'sequelize';
 import database from '..';
+import User from './user';
 import logger from '../../logger';
 
-const User = database.define('user', {
+const Notification = database.define('notification', {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
     },
-    name: {
+    title: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
-    },
-    password_hash: {
+    message: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    role: {
-        type: DataTypes.STRING,
-        //allowNull: false
+    read: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false
     }
 });
 
-//Create table if not exists...
 const init = async () => {
     try {
-        await User.sync({
+        Notification.belongsTo(User, {
+            constraint: true,
+            foreignkey: 'user_id'
+        });
+        await Notification.sync({
             alter: true
         });
     } catch (error) {
@@ -41,4 +41,4 @@ const init = async () => {
 
 init();
 
-export default User;
+export default Notification;
