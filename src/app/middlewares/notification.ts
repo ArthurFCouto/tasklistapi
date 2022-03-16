@@ -1,4 +1,5 @@
 import { NextFunction, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import Notification from '../../database/models/notification';
 import logger from '../../logger';
 const events = require('events');
@@ -12,9 +13,11 @@ const notificationMiddleware = async (req: any, res: Response, next: NextFunctio
         'Connection': 'heep-alive'
     });
     try {
+        const { token } = req.params;
+        const decoded = Object(await jwt.verify(token, String(process.env.JWT_SECRET)));
         const notification = await Notification.findAll({
             where: {
-                userId: 2
+                userId: decoded.id
             }
         })
             .then((list: any) => list.sort((x: any, y: any) => x.id === y.id ? 0 : x.id > y.id ? 1 : -1));
