@@ -28,7 +28,7 @@ routes.get('/task', authMiddleware, TaskController.list);
 routes.put('/task/:id', authMiddleware, TaskController.update);
 routes.delete('/task/:id', authMiddleware, TaskController.delete);
 
-routes.get('/realtimenotification/:token', notificationMiddleware, NotificationController.notify);
+routes.get('/realtimenotification', authMiddleware, notificationMiddleware);
 
 routes.get('/notification', authMiddleware, NotificationController.list);
 routes.put('/notification/:id', authMiddleware, NotificationController.update);

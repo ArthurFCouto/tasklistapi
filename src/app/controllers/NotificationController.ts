@@ -25,9 +25,6 @@ const notification_model = (notification: TypeNotification) => {
 };
 
 class NotificationController {
-    notify(req: Request, res: Response) {
-        return res.send("Notifications");
-    }
 
     async list(req: any, res: Response) {
         const { read } = req.query;

@@ -43,6 +43,7 @@ class TaskController {
                 task: task,
                 deadline: deadline
             });
+            notificationUtil.SaveNotification("Inclusão realizada", `Atividade de ID ${newTask.id} incluída com sucesso.`, req.userId);
             return res.json(task_model(newTask));
         } catch (error) {
             logger.error(error);
@@ -92,6 +93,7 @@ class TaskController {
             await task.update({
                 check: true
             });
+            notificationUtil.SaveNotification("Tarefa finalizada", `Atividade de ID ${id} concluída com sucesso.`, req.userId);
             return res.json(task_model(task));
         } catch (error) {
             logger.error(error);
