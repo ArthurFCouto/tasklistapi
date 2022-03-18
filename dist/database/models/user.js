@@ -34,6 +34,10 @@ const User = __1.default.define('user', {
     password_hash: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false
+    },
+    role: {
+        type: sequelize_1.DataTypes.STRING,
+        //allowNull: false
     }
 });
 //Create table if not exists...

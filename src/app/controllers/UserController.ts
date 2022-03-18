@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import User from '../../database/models/user';
 import logger from '../../logger';
-import { role_user } from '../config/roles';
+import Config from '../config';
 
 /*const deleteFile = (src: PathLike) => {
     fs.unlink(src, function (err) {
@@ -13,6 +13,8 @@ import { role_user } from '../config/roles';
         console.log(`Image temp deleted. Source: ${src}`);
     });
 }*/
+
+const { roles } = Config;
 
 type User = {
     created_at: string;
@@ -62,7 +64,7 @@ class UserController {
                 name: name,
                 email: email,
                 password_hash: await bcrypt.hash(password, 8),
-                role: role_user
+                role: roles.user
             });
             const { id, role } = user;
             return res.json({
@@ -92,7 +94,7 @@ class UserController {
             /*if (user.image_perfil != null)
                 deleteFile(user.image_perfil);*/
             await user.destroy();
-            return res.status(200).json({});
+            return res.status(200).end();
         } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });

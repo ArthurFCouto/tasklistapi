@@ -12,23 +12,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+//import fs, { PathLike } from 'fs';
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const user_1 = __importDefault(require("../../database/models/user"));
 const logger_1 = __importDefault(require("../../logger"));
-/*const deleteFile = (src: PathLike) => {
-    fs.unlink(src, function (err) {
-        if (err)
-            logger.error(err);
-        console.log(`Image temp deleted. Source: ${src}`);
-    });
-}*/
+const roles_1 = require("../config/roles");
+const user_model = (user) => {
+    return {
+        created_at: user.created_at,
+        email: user.email,
+        id: user.id,
+        image: `/public/images/profile.png`,
+        name: user.name,
+        role: user.role,
+        updated_at: user.updated_at,
+    };
+};
 class UserController {
     save(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const { email, name, password } = req.body;
+            if (!email || !name || !password)
+                return res.status(400).json({ error: 'Please check the submitted fields' });
             try {
                 const emailIsPresent = yield user_1.default.findOne({
                     where: {
-                        email: req.body.email
+                        email: email
                     }
                 });
                 if (emailIsPresent)
@@ -44,16 +54,17 @@ class UserController {
                     }
                 }*/
                 const user = yield user_1.default.create({
-                    name: req.body.name,
-                    email: req.body.email,
-                    password_hash: yield bcryptjs_1.default.hash(req.body.password, 8)
+                    name: name,
+                    email: email,
+                    password_hash: yield bcryptjs_1.default.hash(password, 8),
+                    role: roles_1.role_user
                 });
-                const { id, name, email } = user;
+                const { id, role } = user;
                 return res.json({
-                    id,
-                    name,
-                    email,
-                    image: `/public/images/profile.png`
+                    user: user_model(user),
+                    token: jsonwebtoken_1.default.sign({ id, role }, String(process.env.JWT_SECRET), {
+                        expiresIn: process.env.JWT_EXPIRESIN
+                    })
                 });
             }
             catch (error) {
@@ -64,10 +75,13 @@ class UserController {
     }
     delete(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            if (!id)
+                return res.status(400).json({ error: 'Please check the submitted params' });
             try {
                 const user = yield user_1.default.findOne({
                     where: {
-                        id: req.params.id
+                        id: id
                     }
                 });
                 if (!user)
@@ -87,34 +101,25 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield user_1.default.findAll()
                 .then((list) => list.map((user) => {
-                const { id, name, email } = user;
-                return {
-                    id,
-                    name,
-                    email,
-                    image: `/public/images/profile.png`
-                };
+                return user_model(user);
             }));
             return res.json(user);
         });
     }
     detail(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            if (!id)
+                return res.status(400).json({ error: 'Please check the submitted fields' });
             try {
                 const user = yield user_1.default.findOne({
                     where: {
-                        id: req.params.id
+                        id: id
                     }
                 });
                 if (!user)
                     return res.status(404).json({ error: 'User not found' });
-                const { id, name, email } = user;
-                return res.json({
-                    id,
-                    name,
-                    email,
-                    image: `/public/images/profile.png`
-                });
+                return res.json(user_model(user));
             }
             catch (error) {
                 logger_1.default.error(error);

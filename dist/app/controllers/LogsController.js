@@ -18,7 +18,6 @@ class LogController {
     getLogs(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const src = path_1.default.resolve(__dirname, '..', '..', '..', 'logs', 'logs.log');
-            //const src = 'logs/logs.log';
             (0, fs_1.readFile)(src, (err, data) => {
                 if (err)
                     return res.status(500).json({

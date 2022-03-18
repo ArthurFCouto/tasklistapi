@@ -20,6 +20,8 @@ class SessionController {
     verify(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { email, password } = req.body;
+            if (!email || !password)
+                return res.status(400).json({ error: 'Please check the submitted fields' });
             try {
                 const user = yield user_1.default.findOne({
                     where: {
@@ -28,14 +30,14 @@ class SessionController {
                 });
                 if (user) {
                     if (yield bcryptjs_1.default.compare(String(password), user.password_hash)) {
-                        const { id, name, email } = user;
+                        const { id, email, name, role } = user;
                         return res.status(200).json({
                             user: {
                                 id,
                                 name,
                                 email
                             },
-                            token: jsonwebtoken_1.default.sign({ id }, String(process.env.JWT_SECRET), {
+                            token: jsonwebtoken_1.default.sign({ id, role }, String(process.env.JWT_SECRET), {
                                 expiresIn: process.env.JWT_EXPIRESIN
                             })
                         });

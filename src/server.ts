@@ -1,3 +1,3 @@
 import app from './app';
-const port = process.env.PORT || 3030;
-app.listen(port);
+import Config from './app/config';
+app.listen(Config.port);

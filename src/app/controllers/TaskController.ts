@@ -1,8 +1,7 @@
 import { Response } from 'express';
 import Task from '../../database/models/task';
 import logger from '../../logger';
-import notificationUtil from '../../util/notificationUtil';
-
+import NotificationService from '../service/NotificationService';
 type Task = {
     id: number;
     task: string;
@@ -43,7 +42,7 @@ class TaskController {
                 task: task,
                 deadline: deadline
             });
-            notificationUtil.SaveNotification("Inclusão realizada", `Atividade de ID ${newTask.id} incluída com sucesso.`, req.userId);
+            NotificationService.saveNotification("Inclusão realizada", `Atividade de ID ${newTask.id} incluída com sucesso.`, req.userId);
             return res.json(task_model(newTask));
         } catch (error) {
             logger.error(error);
@@ -93,7 +92,7 @@ class TaskController {
             await task.update({
                 check: true
             });
-            notificationUtil.SaveNotification("Tarefa finalizada", `Atividade de ID ${id} concluída com sucesso.`, req.userId);
+            NotificationService.saveNotification("Tarefa finalizada", `Atividade de ID ${id} concluída com sucesso.`, req.userId);
             return res.json(task_model(task));
         } catch (error) {
             logger.error(error);
@@ -115,8 +114,8 @@ class TaskController {
             if (!task)
                 return res.status(404).json({ error: 'Task not found' });
             await task.destroy();
-            notificationUtil.SaveNotification("Exclusão realizada", `Atividade de ID ${id} excluída com sucesso.`, req.userId);
-            return res.status(200).json({});
+            NotificationService.saveNotification("Exclusão realizada", `Atividade de ID ${id} excluída com sucesso.`, req.userId);
+            return res.status(200).end();
         } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });

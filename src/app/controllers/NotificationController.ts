@@ -1,51 +1,43 @@
-import { Request, Response } from 'express';
-import Notification from '../../database/models/notification';
+import { Request, Response, NextFunction } from 'express';
 import logger from '../../logger';
-
-type TypeNotification = {
-    id: number;
-    title: string;
-    message: string;
-    read: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    userId: number;
-};
-
-const notification_model = (notification: TypeNotification) => {
-    return {
-        id: notification.id,
-        title: notification.title,
-        message: notification.message,
-        read: notification.read,
-        createdAt: notification.createdAt,
-        updatedAt: notification.updatedAt,
-        userId: notification.userId
-    };
-};
+import Config from '../config';
+import NotificationService, { TypeNotification } from '../service/NotificationService';
+const events = require('events');
+export const myEmitter = new events.EventEmitter();
+const { headerEventStream } = Config;
 
 class NotificationController {
 
+    getLast(req: any, res: Response, next: NextFunction) {
+        const userId = req.userId;
+        res.writeHead(200, headerEventStream);
+        try {
+            myEmitter.on('new_notification', async () => {
+                const notification = await NotificationService.getLastNotification(userId);
+                const data = {
+                    title: notification?.title,
+                    message: notification?.message
+                };
+                res.write(JSON.stringify(data) + '\n\n');
+            });
+        } catch (error) {
+            logger.error(error);
+            return res.status(500).json({ error: 'Error on our server. Try later' });
+        }
+    }
+
     async list(req: any, res: Response) {
         const { read } = req.query;
+        const userId = req.userId;
         try {
-            const notification = await Notification.findAll({
-                where: {
-                    userId: req.userId
-                }
-            })
-                .then((list: any) =>
-                    list.map((notification: TypeNotification) => {
-                        return notification_model(notification);
-                    }).sort((x: TypeNotification, y: TypeNotification) => x.createdAt === y.createdAt ? 0 : x.createdAt > y.createdAt ? 1 : -1)
-                );
-            if (read && notification.length > 0) {
-                return res.json(notification.filter((notification: TypeNotification) => {
-                    if (String(notification.read) == String(read))
+            const notifications = NotificationService.sortNotifications("id", await NotificationService.getNotifications(userId));
+            if (read && notifications.length > 0) {
+                return res.json(notifications.filter((notification: TypeNotification) => {
+                    if (String(notification.read) === String(read))
                         return notification;
                 }));
             };
-            return res.json(notification);
+            return res.json(notifications);
         } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });
@@ -57,18 +49,10 @@ class NotificationController {
         if (!id)
             return res.status(400).json({ error: 'Please check the submitted fields' });
         try {
-            const notification = await Notification.findOne({
-                where: {
-                    id: id,
-                    userId: req.userId
-                }
-            });
+            const notification = await NotificationService.updateNotification(req.userId, id);
             if (!notification)
                 return res.status(404).json({ error: 'Notification not found' });
-            await notification.update({
-                read: true
-            });
-            return res.json(notification_model(notification));
+            return res.json(notification);
         } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });
@@ -80,16 +64,20 @@ class NotificationController {
         if (!id)
             return res.status(400).json({ error: 'Please check the submitted fields' });
         try {
-            const notification = await Notification.findOne({
-                where: {
-                    id: id,
-                    userId: req.userId
-                }
-            });
+            const notification = await NotificationService.deleteNotification(req.userId, id);
             if (!notification)
                 return res.status(404).json({ error: 'Notification not found' });
-            await notification.destroy();
-            return res.json(notification_model(notification));
+            return res.status(200).end();
+        } catch (error) {
+            logger.error(error);
+            return res.status(500).json({ error: 'Error on our server. Try later' });
+        }
+    }
+
+    async getAll(req: any, res: Response) {
+        try {
+            const notifications = NotificationService.sortNotifications("id", await NotificationService.getFullNotifications());
+            return res.json(notifications);
         } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Error on our server. Try later' });
