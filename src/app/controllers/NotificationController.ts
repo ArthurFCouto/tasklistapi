@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+import User from '../../database/models/user';
 import logger from '../../logger';
 import Config from '../config';
 import NotificationService, { TypeNotification } from '../service/NotificationService';
@@ -8,22 +10,31 @@ const { headerEventStream } = Config;
 
 class NotificationController {
 
-    getLast(req: any, res: Response, next: NextFunction) {
-        //const { userId } = req.params;
-        const userId = req.userId;
+    async getLast(req: Request, res: Response, next: NextFunction) {
         res.writeHead(200, headerEventStream);
-        try {
-            myEmitter.on('new_notification', async () => {
-                const notification = await NotificationService.getLastNotification(userId);
-                const data = {
-                    title: notification?.title,
-                    message: notification?.message
-                };
-                res.write(`data: ${JSON.stringify(data)}\n\n`);
-            });
-        } catch (error) {
-            logger.error(error);
-            return res.status(500).json({ error: 'Error on our server. Try later' });
+        const authHeader = req.headers.authorization;
+        if (authHeader) {
+            try {
+                const [, token] = authHeader.split(' ');
+                const decoded = Object(await jwt.verify(token, String(process.env.JWT_SECRET)));
+                const user = await User.findByPk(decoded.id);
+                if (user) {
+                    myEmitter.on('new_notification', async () => {
+                        const notification = await NotificationService.getLastNotification(decoded.id);
+                        const data = {
+                            title: notification?.title,
+                            message: notification?.message
+                        };
+                        res.write(`data: ${JSON.stringify(data)}\n\n`);
+                    });
+                } else
+                    return res.write(`data: { error: Token user not found, invalid token }`);
+            } catch (error) {
+                logger.error(error);
+                return res.status(500).json({ error: 'Error on our server. Try later' });
+            }
+        } else {
+            return res.status(401);
         }
     }
 
