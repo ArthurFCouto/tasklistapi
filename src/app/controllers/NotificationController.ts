@@ -18,7 +18,7 @@ class NotificationController {
                     title: notification?.title,
                     message: notification?.message
                 };
-                res.write(JSON.stringify(data) + '\n\n');
+                res.write(`data: ${JSON.stringify(data)}\n\n`);
             });
         } catch (error) {
             logger.error(error);
