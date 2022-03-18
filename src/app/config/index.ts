@@ -28,7 +28,7 @@ export default {
     port: process.env.PORT || 3030,
     headerEventStream: {
         'Content-Type': 'text/event-stream',
-        'Connection': 'heep-alive',
+        'Connection': 'keep-alive',
         //'Access-Control-Allow-Origin': '*',
         'Cache-Control': 'no-cache',
     },

@@ -9,7 +9,8 @@ const { headerEventStream } = Config;
 class NotificationController {
 
     getLast(req: any, res: Response, next: NextFunction) {
-        const userId = req.userId;
+        const { userId } = req.params;
+        //const userId = req.userId;
         res.writeHead(200, headerEventStream);
         try {
             myEmitter.on('new_notification', async () => {
