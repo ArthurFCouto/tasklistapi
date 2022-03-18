@@ -29,7 +29,7 @@ export default {
     headerEventStream: {
         'Content-Type': 'text/event-stream',
         'Connection': 'heep-alive',
-        'Access-Control-Allow-Origin': '*',
+        //'Access-Control-Allow-Origin': '*',
         'Cache-Control': 'no-cache',
     },
     database: {
