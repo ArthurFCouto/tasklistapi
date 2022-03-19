@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response } from 'express';
 import logger from '../../logger';
 import Config from '../config';
 import NotificationService, { TypeNotification } from '../service/NotificationService';
@@ -8,8 +8,8 @@ const { headerEventStream } = Config;
 
 class NotificationController {
 
-    getLast(req: any, res: Response, next: NextFunction) {
-        const { userId } = req.params;
+    getLast(req: any, res: Response) {
+        const userId = req.userId;
         res.writeHead(200, headerEventStream);
         try {
             myEmitter.on('new_notification', async () => {
@@ -22,7 +22,7 @@ class NotificationController {
             });
         } catch (error) {
             logger.error(error);
-            return res.status(500).json({ error: 'Error on our server. Try later' });
+            return res.write(`data: {"error" : "Error on our server. Try later" } \n\n`);
         }
     }
 

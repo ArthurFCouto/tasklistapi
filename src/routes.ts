@@ -28,8 +28,8 @@ routes.put('/task/:id', authMiddleware, TaskController.update);
 routes.delete('/task/:id', authMiddleware, TaskController.delete);
 
 
-//routes.get('/notification/realtime', authMiddleware, NotificationController.getLast);
-routes.get('/notification/realtime/:userId', NotificationController.getLast);
+routes.get('/notification/realtime', authMiddleware, NotificationController.getLast);
+//routes.get('/notification/realtime/:userId', NotificationController.getLast);
 routes.get('/notification', authMiddleware, NotificationController.list);
 routes.get('/notification/all', authMiddleware, roleMiddleware, NotificationController.getAll);
 routes.put('/notification/:id', authMiddleware, NotificationController.update);
