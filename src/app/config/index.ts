@@ -29,7 +29,6 @@ export default {
     headerEventStream: {
         'Content-Type': 'text/event-stream',
         'Connection': 'keep-alive',
-        //'Access-Control-Allow-Origin': '*',
         'Cache-Control': 'no-cache',
     },
     database: {

@@ -14,7 +14,7 @@ export type TypeNotification = {
 
 class NotificationService {
 
-    sortNotifications(order: order, notification: any) {
+    sortNotifications(order: order, notification: Array<TypeNotification>) {
         if (notification.length > 0) {
             switch (order) {
                 case "id":
@@ -41,8 +41,8 @@ class NotificationService {
         });
     }
 
-    async getLastNotification(userId: number) {
-        const notifications: any = await this.getNotifications(userId);
+    async getLastNotification() {
+        const notifications: Array<TypeNotification> = await this.getFullNotifications();
         if (notifications.length > 0) {
             const notificationOrdered = this.sortNotifications("id", notifications);
             return notificationOrdered[notifications.length - 1];
@@ -50,19 +50,19 @@ class NotificationService {
     }
 
     async updateNotification(userId: number, id: number) {
-        const notification: any = await Notification.findByPk(id);
+        const notification = await Notification.findByPk(id);
         if (notification && notification.userId === userId) {
             return await notification.update({
                 read: true
             });
-        }        
+        }
     }
 
     async deleteNotification(userId: number, id: number) {
-        const notification: any = await Notification.findByPk(id);
+        const notification = await Notification.findByPk(id);
         if (notification && notification.userId === userId) {
             return await notification.destroy();
-        }        
+        }
     }
 
     async saveNotification(title: string, message: string, userId: number) {

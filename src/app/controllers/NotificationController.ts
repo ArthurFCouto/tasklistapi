@@ -8,21 +8,23 @@ const { headerEventStream } = Config;
 
 class NotificationController {
 
-    getLast(req: any, res: Response) {
+    getRealTime(req: any, res: Response) {
         const userId = req.userId;
         res.writeHead(200, headerEventStream);
         try {
             myEmitter.on('new_notification', async () => {
-                const notification = await NotificationService.getLastNotification(userId);
-                const data = {
-                    title: notification?.title,
-                    message: notification?.message
-                };
-                res.write(`data: ${JSON.stringify(data)}\n\n`);
+                const notification = await NotificationService.getLastNotification();
+                if (notification?.userId === userId) {
+                    const data = {
+                        title: notification?.title,
+                        message: notification?.message
+                    };
+                    res.write(`data: ${JSON.stringify(data)}\n\n`);
+                }
             });
         } catch (error) {
             logger.error(error);
-            return res.write(`data: {"error" : "Error on our server. Try later" } \n\n`);
+            return res.write(`data: { "error" : "Error on our server. Try later" } \n\n`);
         }
     }
 
@@ -74,7 +76,7 @@ class NotificationController {
         }
     }
 
-    async getAll(req: any, res: Response) {
+    async listFull(req: any, res: Response) {
         try {
             const notifications = NotificationService.sortNotifications("id", await NotificationService.getFullNotifications());
             return res.json(notifications);
