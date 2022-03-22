@@ -1,4 +1,4 @@
-import winston from "winston";
+import winston from "winston"; //Biblioteca para trabalhar com logs
 
 const logger = winston.createLogger({ //Criação do logger
     format: winston.format.combine( //Configurações do formato dos logs
@@ -16,7 +16,7 @@ const logger = winston.createLogger({ //Criação do logger
             filename: 'logs/logs.log',
             level: 'info'
         }),
-    ],
+    ], //Vou utilizar o mesmo arquivo e separar os logs por tipo
 });
 
 //Se estiver em ambiente diferente do de produção, o erro também aparecerá no console

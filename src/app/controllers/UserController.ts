@@ -1,19 +1,9 @@
 import { Request, Response } from 'express';
-//import fs, { PathLike } from 'fs';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import User from '../../database/models/user';
 import logger from '../../logger';
 import Config from '../config';
-
-/*const deleteFile = (src: PathLike) => {
-    fs.unlink(src, function (err) {
-        if (err)
-            logger.error(err);
-        console.log(`Image temp deleted. Source: ${src}`);
-    });
-}*/
-
 const { roles } = Config;
 
 type User = {
@@ -50,16 +40,6 @@ class UserController {
             });
             if (emailIsPresent)
                 return res.status(400).json({ error: 'E-mail already registered' });
-            /*let url = null;
-            if (req.file) {
-                const { filename, path: src, size } = req.file;
-                if (size / 1024 < 300) {
-                    url = filename;
-                } else {
-                    deleteFile(src);
-                    return res.status(401).json({ error: 'Image size larger than allowed (300kb)' });
-                }
-            }*/
             const user = await User.create({
                 name: name,
                 email: email,
@@ -130,3 +110,24 @@ class UserController {
 }
 
 export default new UserController();
+
+//Futuros testes com a biblioteca multer
+//import fs, { PathLike } from 'fs';
+/*let url = null;
+if (req.file) {
+    const { filename, path: src, size } = req.file;
+    if (size / 1024 < 300) {
+        url = filename;
+    } else {
+        deleteFile(src);
+        return res.status(401).json({ error: 'Image size larger than allowed (300kb)' });
+    }
+}*/
+
+/*const deleteFile = (src: PathLike) => {
+fs.unlink(src, function (err) {
+if (err)
+logger.error(err);
+console.log(`Image temp deleted. Source: ${src}`);
+});
+}*/

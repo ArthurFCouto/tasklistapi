@@ -20,7 +20,7 @@ routes.post('/task', authMiddleware, TaskController.save);
 routes.get('/task', authMiddleware, TaskController.list);
 routes.put('/task/:id', authMiddleware, TaskController.update);
 routes.delete('/task/:id', authMiddleware, TaskController.delete);
-//routes.get('/task/all', authMiddleware, roleMiddleware, TaskController.listAll);
+routes.get('/task/all', authMiddleware, roleMiddleware, TaskController.listAll);
 
 
 routes.get('/notification/realtime', authMiddleware, NotificationController.getRealTime);

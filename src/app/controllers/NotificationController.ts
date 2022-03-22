@@ -66,7 +66,7 @@ class NotificationController {
         if (!id)
             return res.status(400).json({ error: 'Please check the submitted fields' });
         try {
-            const notification = await NotificationService.deleteNotification(req.userId, id);
+            const notification = await NotificationService.deleteNotification(req.userId, id, req.role);
             if (!notification)
                 return res.status(404).json({ error: 'Notification not found' });
             return res.status(200).end();

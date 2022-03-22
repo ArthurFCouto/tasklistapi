@@ -24,13 +24,14 @@ const User = database.define('user', {
     },
     role: {
         type: DataTypes.STRING,
-        //allowNull: false
+        allowNull: false
     }
 });
 
 //Create table if not exists...
 const init = async () => {
     try {
+        //Checks for updates to table properties...
         await User.sync({
             alter: true
         });
