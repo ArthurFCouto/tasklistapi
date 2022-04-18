@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const task_1 = __importDefault(require("../../database/models/task"));
 const logger_1 = __importDefault(require("../../logger"));
-const notificationService_1 = __importDefault(require("../../service/notificationService"));
+const NotificationService_1 = __importDefault(require("../service/NotificationService"));
 const task_model = (task) => {
     return {
         id: task.id,
@@ -45,7 +45,7 @@ class TaskController {
                     task: task,
                     deadline: deadline
                 });
-                notificationService_1.default.saveNotification("Inclusão realizada", `Atividade de ID ${newTask.id} incluída com sucesso.`, req.userId);
+                NotificationService_1.default.saveNotification("Inclusão realizada", `Atividade de ID ${newTask.id} incluída com sucesso.`, req.userId, req.role);
                 return res.json(task_model(newTask));
             }
             catch (error) {
@@ -98,7 +98,7 @@ class TaskController {
                 yield task.update({
                     check: true
                 });
-                notificationService_1.default.saveNotification("Tarefa finalizada", `Atividade de ID ${id} concluída com sucesso.`, req.userId);
+                NotificationService_1.default.saveNotification("Tarefa finalizada", `Atividade de ID ${id} concluída com sucesso.`, req.userId, req.role);
                 return res.json(task_model(task));
             }
             catch (error) {
@@ -122,8 +122,31 @@ class TaskController {
                 if (!task)
                     return res.status(404).json({ error: 'Task not found' });
                 yield task.destroy();
-                notificationService_1.default.saveNotification("Exclusão realizada", `Atividade de ID ${id} excluída com sucesso.`, req.userId);
-                return res.status(200).json({});
+                NotificationService_1.default.saveNotification("Exclusão realizada", `Atividade de ID ${id} excluída com sucesso.`, req.userId, req.role);
+                return res.status(200).end();
+            }
+            catch (error) {
+                logger_1.default.error(error);
+                return res.status(500).json({ error: 'Error on our server. Try later' });
+            }
+        });
+    }
+    listAll(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { check } = req.query;
+            try {
+                const tasks = yield task_1.default.findAll()
+                    .then((list) => list.map((tasks) => {
+                    return task_model(tasks);
+                }).sort((x, y) => x.id == y.id ? 0 : x.id > y.id ? 1 : -1));
+                if (check && tasks.length > 0) {
+                    return res.json(tasks.filter((task) => {
+                        if (String(task.check) == String(check))
+                            return task;
+                    }));
+                }
+                ;
+                return res.json(tasks);
             }
             catch (error) {
                 logger_1.default.error(error);

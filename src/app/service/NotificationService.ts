@@ -2,8 +2,11 @@ import { myEmitter } from "../../app/controllers/NotificationController";
 import Notification from "../../database/models/notification";
 import logger from "../../logger";
 import Config from "../config";
+
 const { roles } = Config;
+
 type order = "id" | "createdAt" | "read";
+
 export type TypeNotification = {
     id: number;
     title: string;
@@ -15,7 +18,6 @@ export type TypeNotification = {
 };
 
 class NotificationService {
-
     sortNotifications(order: order, notification: Array<TypeNotification>) {
         if (notification.length > 0) {
             switch (order) {
@@ -62,17 +64,15 @@ class NotificationService {
 
     async deleteNotification(userId: number, id: number, role: string): Promise<TypeNotification | undefined>  {
         const notification = await Notification.findByPk(id);
-        if (notification != null && (notification.userId === userId || role === roles.admin)) {
+        if (notification != null && (notification.userId === userId || role === roles.admin))
             return await notification.destroy();
-        }
     }
 
     async saveNotification(title: string, message: string, userId: number, role: string): Promise<void> {
         try {
             const notifications = await this.getNotifications(userId);
-            if(notifications.length >= 10) {
+            if(notifications.length >= 10) 
                 await this.deleteNotification(userId, notifications[0].id, role);
-            }
             await Notification.create({ title, message, userId });
             myEmitter.emit('new_notification');
         } catch (error) {

@@ -12,12 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-//import fs, { PathLike } from 'fs';
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const user_1 = __importDefault(require("../../database/models/user"));
 const logger_1 = __importDefault(require("../../logger"));
-const roles_1 = require("../config/roles");
+const config_1 = __importDefault(require("../config"));
+const { roles } = config_1.default;
 const user_model = (user) => {
     return {
         created_at: user.created_at,
@@ -43,21 +43,11 @@ class UserController {
                 });
                 if (emailIsPresent)
                     return res.status(400).json({ error: 'E-mail already registered' });
-                /*let url = null;
-                if (req.file) {
-                    const { filename, path: src, size } = req.file;
-                    if (size / 1024 < 300) {
-                        url = filename;
-                    } else {
-                        deleteFile(src);
-                        return res.status(401).json({ error: 'Image size larger than allowed (300kb)' });
-                    }
-                }*/
                 const user = yield user_1.default.create({
                     name: name,
                     email: email,
                     password_hash: yield bcryptjs_1.default.hash(password, 8),
-                    role: roles_1.role_user
+                    role: roles.user
                 });
                 const { id, role } = user;
                 return res.json({
@@ -89,7 +79,7 @@ class UserController {
                 /*if (user.image_perfil != null)
                     deleteFile(user.image_perfil);*/
                 yield user.destroy();
-                return res.status(200).json({});
+                return res.status(200).end();
             }
             catch (error) {
                 logger_1.default.error(error);
@@ -129,3 +119,22 @@ class UserController {
     }
 }
 exports.default = new UserController();
+//Futuros testes com a biblioteca multer
+//import fs, { PathLike } from 'fs';
+/*let url = null;
+if (req.file) {
+    const { filename, path: src, size } = req.file;
+    if (size / 1024 < 300) {
+        url = filename;
+    } else {
+        deleteFile(src);
+        return res.status(401).json({ error: 'Image size larger than allowed (300kb)' });
+    }
+}*/
+/*const deleteFile = (src: PathLike) => {
+fs.unlink(src, function (err) {
+if (err)
+logger.error(err);
+console.log(`Image temp deleted. Source: ${src}`);
+});
+}*/ 

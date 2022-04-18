@@ -1,13 +1,17 @@
-import winston from "winston"; //Biblioteca para trabalhar com logs
+//Biblioteca para trabalhar com logs
+import winston from "winston";
 
-const logger = winston.createLogger({ //Criação do logger
-    format: winston.format.combine( //Configurações do formato dos logs
-        winston.format.errors({ //Incluirá o stacktrace
+//Criação do logger
+const logger = winston.createLogger({
+    //Configurações do formato dos logs: Incluirá o stacktrace e será registrado em formato Json
+    format: winston.format.combine(
+        winston.format.errors({
             stack: true
         }),
-        winston.format.json() //Será registrado em formato Json
+        winston.format.json()
     ),
-    transports: [ //O destino dos logs (arquivos)
+    //Configurando o destino dos logs (arquivos). Será utilizado o mesmo arquivo mas os logs serão separados por tipo
+    transports: [
         new winston.transports.File({
             filename: 'logs/logs.log',
             level: 'error'
@@ -16,10 +20,10 @@ const logger = winston.createLogger({ //Criação do logger
             filename: 'logs/logs.log',
             level: 'info'
         }),
-    ], //Vou utilizar o mesmo arquivo e separar os logs por tipo
+    ],
 });
 
-//Se estiver em ambiente diferente do de produção, o erro também aparecerá no console
+//Se não estiver no ambiente de produção, o erro também aparecerá no console
 if (process.env.NODE_ENV !== 'production') {
     logger.add(new winston.transports.Console({
         format: winston.format.simple()

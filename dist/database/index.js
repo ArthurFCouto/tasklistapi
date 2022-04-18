@@ -4,32 +4,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const logger_1 = __importDefault(require("../logger"));
+const config_1 = __importDefault(require("../app/config"));
 const { Sequelize } = require("sequelize");
-const url = process.env.NODE_ENV == 'production' ? process.env.DATABASE_URL : 'postgres://postgres@localhost:5432/tasklist';
-const obj = process.env.NODE_ENV == 'production' ? {
-    dialectOptions: {
-        ssl: {
-            rejectUnauthorized: false,
-        },
-    },
-} : {
-    dialect: 'postgres',
-    host: 'localhost',
-    username: 'postgres',
-    password: 'Arthur16',
-    database: 'tasklist',
-    define: {
-        timestamps: true,
-        underscored: true,
-        underscoredAll: true,
-    },
-};
-const database = new Sequelize(url, obj);
+const { database: databaseConfig } = config_1.default;
+const database = new Sequelize(databaseConfig.url, databaseConfig.obj);
+//Opicional
 database
     .authenticate()
-    .then(() => console.log("Connection has been established successfully."))
+    .then(() => console.log("A conexão foi estabelecida com sucesso."))
     .catch((err) => {
     logger_1.default.error(err);
-    console.error("Unable to connect to the database:", err);
+    console.error("Não foi possível conectar ao banco de dados: ", err);
 });
 exports.default = database;

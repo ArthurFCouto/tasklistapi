@@ -37,12 +37,13 @@ const User = __1.default.define('user', {
     },
     role: {
         type: sequelize_1.DataTypes.STRING,
-        //allowNull: false
+        allowNull: false
     }
 });
-//Create table if not exists...
+//Cria a tabela se ela não existir...
 const init = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        //Checa por alteraçoes no código e tabela, e atualiza a tabela...
         yield User.sync({
             alter: true
         });

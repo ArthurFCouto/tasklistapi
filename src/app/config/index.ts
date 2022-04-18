@@ -1,13 +1,42 @@
-const databaseUrl = process.env.NODE_ENV == 'production' ? process.env.DATABASE_URL : 'postgres://postgres@localhost:5432/tasklist';
-const databaseObj = process.env.NODE_ENV == 'production' ?
-    {
+const databaseOptions = process.env.NODE_ENV == 'production'
+    ? {
+        url: process.env.DATABASE_URL,
+        obj: {
+            dialectOptions: {
+                ssl: {
+                    rejectUnauthorized: false,
+                },
+            },
+        }
+    }
+    : {
+        url: 'postgres://postgres@localhost:5432/tasklist',
+        obj: {
+            dialect: 'postgres',
+            host: 'localhost',
+            username: 'postgres',
+            password: 'Arthur16',
+            database: 'tasklist',
+            define: {
+                timestamps: true,
+                underscored: true,
+                underscoredAll: true,
+            },
+        }
+    }
+
+/*const databaseUrl = process.env.NODE_ENV == 'production'
+    ? process.env.DATABASE_URL
+    : 'postgres://postgres@localhost:5432/tasklist';
+const databaseObj = process.env.NODE_ENV == 'production'
+    ? {
         dialectOptions: {
             ssl: {
                 rejectUnauthorized: false,
             },
         },
-    } :
-    {
+    }
+    : {
         dialect: 'postgres',
         host: 'localhost',
         username: 'postgres',
@@ -18,7 +47,7 @@ const databaseObj = process.env.NODE_ENV == 'production' ?
             underscored: true,
             underscoredAll: true,
         },
-    }
+    } */
 
 export default {
     roles: {
@@ -32,7 +61,7 @@ export default {
         'Cache-Control': 'no-cache',
     },
     database: {
-        url: databaseUrl,
-        obj: databaseObj,
+        url: databaseOptions.url,
+        obj: databaseOptions.obj,
     }
 }

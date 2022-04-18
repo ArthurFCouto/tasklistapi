@@ -4,11 +4,11 @@ import Config from '../config';
 import NotificationService, { TypeNotification } from '../service/NotificationService';
 const events = require('events');
 export const myEmitter = new events.EventEmitter();
-const { headerEventStream } = Config;
 
 class NotificationController {
 
     getRealTime(req: any, res: Response) {
+        const { headerEventStream } = Config;
         const userId = req.userId;
         res.writeHead(200, headerEventStream);
         try {
@@ -16,6 +16,7 @@ class NotificationController {
                 const notification = await NotificationService.getLastNotification();
                 if (notification?.userId === userId) {
                     const data = {
+                        id: notification?.id,
                         title: notification?.title,
                         message: notification?.message
                     };
@@ -24,7 +25,7 @@ class NotificationController {
             });
         } catch (error) {
             logger.error(error);
-            return res.write(`data: { "error" : "Error on our server. Try later" } \n\n`);
+            return res.write(`data: { "error" : "Erro interno no servidor. Tente mais tarde." } \n\n`);
         }
     }
 
@@ -42,47 +43,48 @@ class NotificationController {
             return res.json(notifications);
         } catch (error) {
             logger.error(error);
-            return res.status(500).json({ error: 'Error on our server. Try later' });
+            return res.status(500).json({ error: 'Erro interno no servidor. Tente mais tarde.' });
         }
     }
 
     async update(req: any, res: Response) {
         const { id } = req.params;
         if (!id)
-            return res.status(400).json({ error: 'Please check the submitted fields' });
+            return res.status(400).json({ error: 'Por favor, verifique se os dados foram enviados corretamente.' });
         try {
             const notification = await NotificationService.updateNotification(req.userId, id);
             if (!notification)
-                return res.status(404).json({ error: 'Notification not found' });
+                return res.status(404).json({ error: 'Notificação não encontrada.' });
             return res.json(notification);
         } catch (error) {
             logger.error(error);
-            return res.status(500).json({ error: 'Error on our server. Try later' });
+            return res.status(500).json({ error: 'Erro interno no servidor. Tente mais tarde.' });
         }
     }
 
     async delete(req: any, res: Response) {
         const { id } = req.params;
         if (!id)
-            return res.status(400).json({ error: 'Please check the submitted fields' });
+            return res.status(400).json({ error: 'Por favor, verifique se os dados foram enviados corretamente.' });
         try {
             const notification = await NotificationService.deleteNotification(req.userId, id, req.role);
             if (!notification)
-                return res.status(404).json({ error: 'Notification not found' });
+                return res.status(404).json({ error: 'Notificação não encontrada.' });
             return res.status(200).end();
         } catch (error) {
             logger.error(error);
-            return res.status(500).json({ error: 'Error on our server. Try later' });
+            return res.status(500).json({ error: 'Erro interno no servidor. Tente mais tarde.' });
         }
     }
 
     async listFull(req: any, res: Response) {
+        console.log(req);
         try {
             const notifications = NotificationService.sortNotifications("id", await NotificationService.getFullNotifications());
             return res.json(notifications);
         } catch (error) {
             logger.error(error);
-            return res.status(500).json({ error: 'Error on our server. Try later' });
+            return res.status(500).json({ error: 'Erro interno no servidor. Tente mais tarde.' });
         }
     }
 }

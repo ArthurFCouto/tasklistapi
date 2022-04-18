@@ -1,4 +1,5 @@
-import multer from 'multer';
+//Futura implantação
+/*import multer from 'multer';
 import path from 'path';
 
 export default {
@@ -10,4 +11,4 @@ export default {
             cb(null, `${name.slice(0, 12)}-${Date.now()}${ext}`); //null -> Não estamos tratando erros.
         }
     })
-};
+};*/
