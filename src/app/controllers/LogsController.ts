@@ -8,7 +8,7 @@ class LogController {
         readFile(src, (err, data) => {
             if (err)
                 return res.status(500).json({
-                    error: 'Error on our server. Try later',
+                    error: 'Erro interno no servidor. Tente mais tarde.',
                     details: err
                 });
             return res.set({ 'Content-Type': 'application/json' }).send(data);

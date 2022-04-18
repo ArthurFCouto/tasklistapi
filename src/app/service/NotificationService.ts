@@ -18,7 +18,7 @@ export type TypeNotification = {
 };
 
 class NotificationService {
-    sortNotifications(order: order, notification: Array<TypeNotification>) {
+    sortNotifications(order: order, notification: Array<TypeNotification>): Array<TypeNotification> {
         if (notification.length > 0) {
             switch (order) {
                 case "id":

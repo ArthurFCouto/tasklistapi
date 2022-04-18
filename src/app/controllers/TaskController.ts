@@ -2,6 +2,7 @@ import { Response } from 'express';
 import Task from '../../database/models/task';
 import logger from '../../logger';
 import NotificationService from '../service/NotificationService';
+
 type Task = {
     id: number;
     task: string;
@@ -28,7 +29,7 @@ class TaskController {
     async save(req: any, res: Response) {
         const { task, deadline } = req.body;
         if (!task || !deadline)
-            return res.status(400).json({ error: 'Please check the submitted fields' });
+            return res.status(400).json({ error: 'Por favor, verifique se os dados foram enviados corretamente.' });
         try {
             const tasks = await Task.findAll({
                 where: {
@@ -36,17 +37,16 @@ class TaskController {
                 }
             });
             if (tasks.length >= 5)
-                return res.status(400).json({ error: 'Maximum registrations reached.' });
+                return res.status(400).json({ error: 'Atingido o limite máximo de atividades cadastradas.' });
             const newTask = await Task.create({
                 userId: req.userId,
                 task: task,
                 deadline: deadline
             });
-            NotificationService.saveNotification("Inclusão realizada", `Atividade de ID ${newTask.id} incluída com sucesso.`, req.userId, req.role);
             return res.json(task_model(newTask));
         } catch (error) {
             logger.error(error);
-            return res.status(500).json({ error: 'Error on our server. Try later' });
+            return res.status(500).json({ error: 'Erro interno no servidor. Tente mais tarde.' });
         }
     }
 
@@ -72,14 +72,14 @@ class TaskController {
             return res.json(tasks);
         } catch (error) {
             logger.error(error);
-            return res.status(500).json({ error: 'Error on our server. Try later' });
+            return res.status(500).json({ error: 'Erro interno no servidor. Tente mais tarde.' });
         }
     }
 
     async update(req: any, res: Response) {
         const { id } = req.params;
         if (!id)
-            return res.status(400).json({ error: 'Please check the submitted fields' });
+            return res.status(400).json({ error: 'Por favor, verifique se os dados foram enviados corretamente.' });
         try {
             const task = await Task.findOne({
                 where: {
@@ -88,22 +88,22 @@ class TaskController {
                 }
             });
             if (!task)
-                return res.status(404).json({ error: 'Task not found' });
+                return res.status(404).json({ error: 'Atividade não encontrada.' });
             await task.update({
                 check: true
             });
-            NotificationService.saveNotification("Tarefa finalizada", `Atividade de ID ${id} concluída com sucesso.`, req.userId, req.role);
+            NotificationService.saveNotification('Tarefa concluída', `Atividade de ID ${id} concluída em ${new Date().toLocaleDateString("pt-BR", { timeZone: "UTC" })}.`, req.userId, req.role);
             return res.json(task_model(task));
         } catch (error) {
             logger.error(error);
-            return res.status(500).json({ error: 'Error on our server. Try later' });
+            return res.status(500).json({ error: 'Erro interno no servidor. Tente mais tarde.' });
         }
     }
 
     async delete(req: any, res: Response) {
         const { id } = req.params;
         if (!id)
-            return res.status(400).json({ error: 'Please check the submitted fields' });
+            return res.status(400).json({ error: 'Por favor, verifique se os dados foram enviados corretamente.' });
         try {
             const task = await Task.findOne({
                 where: {
@@ -112,13 +112,13 @@ class TaskController {
                 }
             });
             if (!task)
-                return res.status(404).json({ error: 'Task not found' });
+                return res.status(404).json({ error: 'Atividade não encontrada' });
             await task.destroy();
-            NotificationService.saveNotification("Exclusão realizada", `Atividade de ID ${id} excluída com sucesso.`, req.userId, req.role);
+            NotificationService.saveNotification('Tarefa excluída', `Atividade de ID ${id} excluída em ${new Date().toLocaleDateString("pt-BR", { timeZone: "UTC" })}.`, req.userId, req.role);
             return res.status(200).end();
         } catch (error) {
             logger.error(error);
-            return res.status(500).json({ error: 'Error on our server. Try later' });
+            return res.status(500).json({ error: 'Erro interno no servidor. Tente mais tarde.' });
         }
     }
 
