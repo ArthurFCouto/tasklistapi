@@ -1,3 +1,4 @@
+//Realizar a implementação do Service
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
@@ -31,7 +32,7 @@ class UserController {
     async save(req: any, res: Response) {
         const { email, name, password } = req.body;
         if (!email || !name || !password)
-            return res.status(400).json({ error: 'Please check the submitted fields' });
+            return res.status(400).json({ error: 'Por favor, verifique se os dados foram enviados corretamente.' });
         try {
             const emailIsPresent = await User.findOne({
                 where: {
@@ -39,7 +40,7 @@ class UserController {
                 }
             });
             if (emailIsPresent)
-                return res.status(400).json({ error: 'E-mail already registered' });
+                return res.status(400).json({ error: 'Este e-mail já está cadastrado.' });
             const user = await User.create({
                 name: name,
                 email: email,
@@ -55,14 +56,14 @@ class UserController {
             });
         } catch (error) {
             logger.error(error);
-            return res.status(500).json({ error: 'Error on our server. Try later' });
+            return res.status(500).json({ error: 'Erro interno no servidor. Tente mais tarde.' });
         }
     }
 
     async delete(req: Request, res: Response) {
         const { id } = req.params;
         if (!id)
-            return res.status(400).json({ error: 'Please check the submitted params' });
+            return res.status(400).json({ error: 'Por favor, verifique se os dados foram enviados corretamente.' });
         try {
             const user = await User.findOne({
                 where: {
@@ -70,14 +71,12 @@ class UserController {
                 }
             });
             if (!user)
-                return res.status(404).json({ error: 'User not found' });
-            /*if (user.image_perfil != null)
-                deleteFile(user.image_perfil);*/
+                return res.status(404).json({ error: 'Usuário não encontrado.' });
             await user.destroy();
             return res.status(200).end();
         } catch (error) {
             logger.error(error);
-            return res.status(500).json({ error: 'Error on our server. Try later' });
+            return res.status(500).json({ error: 'Erro interno no servidor. Tente mais tarde.' });
         }
     }
 
@@ -92,7 +91,7 @@ class UserController {
     async detail(req: Request, res: Response) {
         const { id } = req.params;
         if (!id)
-            return res.status(400).json({ error: 'Please check the submitted fields' });
+            return res.status(400).json({ error: 'Por favor, verifique se os dados foram enviados corretamente.' });
         try {
             const user = await User.findOne({
                 where: {
@@ -100,34 +99,13 @@ class UserController {
                 }
             });
             if (!user)
-                return res.status(404).json({ error: 'User not found' });
+                return res.status(404).json({ error: 'Usuário não encontrado.' });
             return res.json(user_model(user));
         } catch (error) {
             logger.error(error);
-            return res.status(500).json({ error: 'Error on our server. Try later' });
+            return res.status(500).json({ error: 'Erro interno no servidor. Tente mais tarde.' });
         }
     }
 }
 
 export default new UserController();
-
-//Futuros testes com a biblioteca multer
-//import fs, { PathLike } from 'fs';
-/*let url = null;
-if (req.file) {
-    const { filename, path: src, size } = req.file;
-    if (size / 1024 < 300) {
-        url = filename;
-    } else {
-        deleteFile(src);
-        return res.status(401).json({ error: 'Image size larger than allowed (300kb)' });
-    }
-}*/
-
-/*const deleteFile = (src: PathLike) => {
-fs.unlink(src, function (err) {
-if (err)
-logger.error(err);
-console.log(`Image temp deleted. Source: ${src}`);
-});
-}*/
