@@ -1,11 +1,11 @@
 # Tutorial para construção desta API 
 # NodeJS + typescript
 
-Este readme foi baseado em um projeto do vídeo de [@Andres Jesse](https://www.youtube.com/playlist?list=PLd4Jo6d-yhDLJcFlLzx4SR4WU8hVUmuSQ) e do curso [@Fabrica de aplicativos](https://www.instagram.com/sujeitoprogramador/).
+Este readme foi baseado em um projeto do vídeo de [@Andres Jesse](https://www.youtube.com/playlist?list=PLd4Jo6d-yhDLJcFlLzx4SR4WU8hVUmuSQ) e nos ensinamentos do curso [@Fabrica de aplicativos](https://www.instagram.com/sujeitoprogramador/).
 
 Será utilizado a versão free do heroku para a hospedagem da API.
 
-Nota: ao clonar este projeto você precisa criar manualmente o arquivo `.env`, conforme explica o tutorial a seguir.
+>Nota: Ao clonar este projeto você precisa criar manualmente o arquivo `.env`, conforme explica o tutorial a seguir.
 
 ## Ambiente e Ferramentas:
 
@@ -23,7 +23,7 @@ Crie uma conta (heroku.com), siga as orientações para instalação do heroku c
 
 `$ heroku login`
 
-Crie um novo projeto **Node.js**. Você pode nomear e preencher os dados como quiser, eu batizei este exemplo como tasklistapi:
+Crie uma nova pasta. Você pode nomear e preencher os dados como quiser, eu batizei este exemplo como ***tasklistapi***:
 
 ```
 $ mkdir tasklistapi
@@ -40,7 +40,7 @@ $ git clone <https://github.com/ArthurFCouto/tasklistapi>
 $ npm install 
 ```
 
-Os **scripts** de inicialização, desenvolvimento e build já estão configurados em `package.json`.
+Os **scripts** de inicialização, desenvolvimento e build já estão configurados em `package.json`, não sendo necessário alterar.
 
 ```
 {
@@ -59,13 +59,15 @@ Execute o projeto (localhost):
 
 `$ npm run dev`
 
-Se tudo correu bem, você poderá acessar a rota inicial via: GET http://localhost:3030
+Se tudo correu bem, você poderá fazer um teste acessando a rota via: POST http://localhost:3030/user
+
+## **2. Hospedagem Heroku**
 
 Agora vamos enviar o projeto ao Heroku. Faça o primeiro commit do projeto ao repositório git (local):
 
 ```
 $ git add .
-$ git commit -am 'initial commit'
+$ git commit -m 'initial commit'
 ```
 
 Crie uma nova aplicação na plataforma Heroku (existe um máximo de 5 apps no plano grátis):
@@ -76,17 +78,17 @@ Envie sua aplicação para execução:
 
 `$ git push heroku master`
 
-Se tudo correu bem, você poderá acessar a rota inicial via: GET https://SEU_APP.herokuapp.com/home
+Se tudo correu bem, você poderá acessar a rota inicial via: POST https://SEU_APP.herokuapp.com/home
 
-Nota: Como a rota */home* não existe, deverá ser apresentado o aviso informando sobre esse erro.
+Nota: Como a rota */home* não existe, deverá ser apresentado o aviso informando sobre o erro 404.
 
-## **2. Rotas e Controllers**
+## **3. Rotas e Controllers**
 
-O projeto está segmentado por pastas e responsabilidades. O arquivo **routes.ts** é responsável pelas rotas, o **server.ts** pela inicialização do servidor e a pasta *app* contém as configurações, controllers, services, etc.
+O projeto está segmentado por pastas e responsabilidades. O arquivo **routes.ts** é responsável pelas rotas, o **server.ts** pela inicialização do servidor e a pasta **app** contém as configurações, controllers, services, etc.
 
-## **3. Banco de Dados**
+## **4. Banco de Dados**
 
-Adicionar um banco **Postgres** ao projeto Heroku. Note que _:hobby-dev_ é o plano grátis, usado neste tutorial:
+Adicionar um banco **Postgres** ao projeto Heroku. Note que ***:hobby-dev*** é o plano grátis, usado neste tutorial:
 
 `$ heroku addons:create heroku-postgresql:hobby-dev`
 
@@ -94,7 +96,7 @@ O banco de dados possui uma string de acesso (que deve ser secreta). Vamos adici
 
 `$ npm install dotenv`
 
-Crie o arquivo `.env` ("ponto" env!), e adicione a variável de ambiente responsável pela conexão com o banco de dados do Heroku:
+Crie o arquivo `.env` ("ponto" env), e adicione a variável de ambiente responsável pela conexão com o banco de dados do Heroku:
 
 ```
 DATABASE_URL=postgres://**url do seu projeto**
@@ -114,7 +116,7 @@ $ git push heroku master
 
 Faça o teste: POST https://SEU_APP.herokuapp.com/user
 
-## **4. Autenticação**
+## **5. Autenticação**
 
 Para trabalhar com autenticação, precisamos de três bibliotecas: **permit**, responsável pelo processo de autenticação; **bcrypt**, responsável pela criptografia da senha dos usuários; e **jsonwebtoken** (JWT), responsável pela criação, assinatura e verificação de tokens.
 
@@ -138,7 +140,7 @@ Envie novamente o projeto ao Heroku:
 
 ```
 $ git add .
-$ git commit -am 'final  version'
+$ git commit -m 'final version'
 $ git push heroku master
 ```
 
